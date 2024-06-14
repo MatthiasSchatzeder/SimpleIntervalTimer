@@ -7,11 +7,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.ProgressIndicatorDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -29,13 +28,7 @@ import com.example.simpleintervaltimer.ui.theme.SimpleintervaltimerTheme
 
 @Composable
 fun Timer(timeInterval: TimeInterval, timerViewModel: TimerViewModel = viewModel()) {
-    timerViewModel.formattedTime.observeAsState().value
-    timerViewModel.timeProgress.observeAsState().value
-    timerViewModel.remainingIntervals.observeAsState().value
-    timerViewModel.progressColor.observeAsState().value
-    timerViewModel.progressState.observeAsState().value
-    timerViewModel.startStopButtonText.observeAsState().value
-    timerViewModel.pauseResumeButtonVisible.observeAsState().value
+    val uiState = timerViewModel.uiState.collectAsState().value
     DisposableEffect(key1 = true) {
         timerViewModel.startTimer(timeInterval)
         onDispose {
@@ -43,14 +36,14 @@ fun Timer(timeInterval: TimeInterval, timerViewModel: TimerViewModel = viewModel
         }
     }
     ConstraintLayout(modifier = Modifier.fillMaxSize()) {
-        val (textIntervalsLeft, progressTimer, progressState, playPauseButton) = createRefs()
+        val (constRefTextIntervalsLeft, constRefProgressTimer, constRefProgressState, constRefPlayPauseButton) = createRefs()
         Text(
             modifier = Modifier
-                .constrainAs(textIntervalsLeft) {
-                    bottom.linkTo(progressTimer.top, margin = 20.dp)
+                .constrainAs(constRefTextIntervalsLeft) {
+                    bottom.linkTo(constRefProgressTimer.top, margin = 20.dp)
                 }
                 .fillMaxWidth(),
-            text = "${timerViewModel.remainingIntervals.value}",
+            text = uiState.getRemainingIntervalsText(),
             style = TextStyle(
                 fontSize = 40.sp, color = Color.White, fontWeight = FontWeight.Normal
             ),
@@ -58,20 +51,24 @@ fun Timer(timeInterval: TimeInterval, timerViewModel: TimerViewModel = viewModel
         )
         ProgressTimer(
             modifier = Modifier
-                .constrainAs(progressTimer) {
+                .constrainAs(constRefProgressTimer) {
                     top.linkTo(parent.top)
                     start.linkTo(parent.start)
                     end.linkTo(parent.end)
                     bottom.linkTo(parent.bottom)
                 },
-            timerViewModel = timerViewModel
+            progress = uiState.percentageDone,
+            color = uiState.intervalState.toStateColor(),
+            timeString = uiState.getRemainingTimeFormatted()
         )
         Text(
             modifier = Modifier
-                .constrainAs(progressState) {
-                    top.linkTo(progressTimer.bottom, margin = 20.dp)
+                .constrainAs(constRefProgressState) {
+                    top.linkTo(constRefProgressTimer.bottom, margin = 20.dp)
                 }
-                .fillMaxWidth(), text = "${timerViewModel.progressState.value}", style = TextStyle(
+                .fillMaxWidth(),
+            text = uiState.intervalState.toStateString(),
+            style = TextStyle(
                 fontSize = 70.sp,
                 color = Color.White,
                 fontWeight = FontWeight.Bold,
@@ -79,33 +76,40 @@ fun Timer(timeInterval: TimeInterval, timerViewModel: TimerViewModel = viewModel
         )
         PauseResumeButton(
             modifier = Modifier
-                .constrainAs(playPauseButton) {
-                    top.linkTo(progressState.bottom)
+                .constrainAs(constRefPlayPauseButton) {
+                    top.linkTo(constRefProgressState.bottom)
                     start.linkTo(parent.start)
                     end.linkTo(parent.end)
                 }
                 .fillMaxWidth()
                 .padding(all = 20.dp),
-            timerViewModel = timerViewModel
+            visible = uiState.isPauseResumeButtonVisible(),
+            buttonText = uiState.getResumeStopButtonText(),
+            onClickAction = timerViewModel::pauseOrResumeTimer
         )
     }
 }
 
 @Composable
-private fun ProgressTimer(modifier: Modifier = Modifier, timerViewModel: TimerViewModel) {
+private fun ProgressTimer(
+    modifier: Modifier = Modifier,
+    progress: Float,
+    color: Color,
+    timeString: String
+) {
     Box(modifier = modifier) {
         CircularProgressIndicator(
-            progress = { timerViewModel.timeProgress.value ?: 0f },
+            progress = { progress },
             modifier = Modifier
                 .align(Alignment.Center)
                 .size(300.dp),
-            color = timerViewModel.progressColor.value ?: ProgressIndicatorDefaults.circularColor,
+            color = color,
             strokeWidth = 10.dp,
             trackColor = Grey2
         )
         Text(
             modifier = Modifier.align(Alignment.Center),
-            text = "${timerViewModel.formattedTime.value}",
+            text = timeString,
             style = TextStyle(
                 fontSize = 80.sp, fontWeight = FontWeight.SemiBold, color = Grey2
             )
@@ -114,11 +118,16 @@ private fun ProgressTimer(modifier: Modifier = Modifier, timerViewModel: TimerVi
 }
 
 @Composable
-private fun PauseResumeButton(modifier: Modifier = Modifier, timerViewModel: TimerViewModel) {
-    if (timerViewModel.pauseResumeButtonVisible.value == false) return
-    Button(modifier = modifier, onClick = { timerViewModel.pauseOrResumeTimer() }) {
+private fun PauseResumeButton(
+    modifier: Modifier = Modifier,
+    visible: Boolean,
+    buttonText: String,
+    onClickAction: () -> Unit
+) {
+    if (!visible) return
+    Button(modifier = modifier, onClick = { onClickAction() }) {
         Text(
-            text = "${timerViewModel.startStopButtonText.value}", style = TextStyle(
+            text = buttonText, style = TextStyle(
                 fontSize = 70.sp
             ), textAlign = TextAlign.Center
         )

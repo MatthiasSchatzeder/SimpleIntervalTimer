@@ -2,149 +2,172 @@ package com.example.simpleintervaltimer.timer
 
 import android.os.CountDownTimer
 import androidx.compose.ui.graphics.Color
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.map
-import com.example.simpleintervaltimer.timer.TimerViewModel.TimerState.DONE
-import com.example.simpleintervaltimer.timer.TimerViewModel.TimerState.INIT
-import com.example.simpleintervaltimer.timer.TimerViewModel.TimerState.PAUSE
-import com.example.simpleintervaltimer.timer.TimerViewModel.TimerState.WORK
+import androidx.lifecycle.viewModelScope
+import com.example.simpleintervaltimer.timer.TimerViewModel.IntervalState.DONE
+import com.example.simpleintervaltimer.timer.TimerViewModel.IntervalState.INIT
+import com.example.simpleintervaltimer.timer.TimerViewModel.IntervalState.PAUSE
+import com.example.simpleintervaltimer.timer.TimerViewModel.IntervalState.WORK
 import com.example.simpleintervaltimer.timer.data.TimeInterval
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.stateIn
 
 class TimerViewModel : ViewModel() {
     private lateinit var timer: CountDownTimer
     private lateinit var timeInterval: TimeInterval
 
-    private val _time: MutableLiveData<Long> = MutableLiveData()
-    private val _remainingIntervals: MutableLiveData<Int> = MutableLiveData(0)
-    private val _timerState: MutableLiveData<TimerState> = MutableLiveData(INIT)
-    private val _isTimerRunning: MutableLiveData<Boolean> = MutableLiveData(false)
+    private val _uiState: MutableStateFlow<TimerUiState> = MutableStateFlow(TimerUiState())
 
-    val formattedTime: LiveData<String> = _time.map {
-        if (_timerState.value == DONE) return@map "Done"
-        val millis: Long = it % 1000
-        val second: Long = it / 1000 % 60
-        val minute: Long = it / (1000 * 60) % 60
-        "%d,%d".format(second, millis / 100)
-    }
-
-    val timeProgress: LiveData<Float> = _time.map {
-        val maxValue: Float = when (_timerState.value) {
-            INIT -> DEFAULT_START_TIME.toFloat()
-            WORK -> timeInterval.workTime.toFloat()
-            PAUSE -> timeInterval.pauseTime.toFloat()
-            DONE, null -> return@map 1.0f
-        }
-        1 - (it.toFloat() / maxValue)
-    }
-
-    val progressColor: LiveData<Color> = _timerState.map {
-        when (_timerState.value) {
-            INIT -> Color.Yellow
-            WORK -> Color.Green
-            PAUSE -> Color.Blue
-            DONE, null -> Color.Cyan
-        }
-    }
-
-    val remainingIntervals: LiveData<String> = _remainingIntervals.map {
-        if (it == 0) "" else "$it"
-    }
-
-    val progressState: LiveData<String> = _timerState.map {
-        when (it) {
-            INIT -> "Prepare"
-            WORK -> "Work"
-            PAUSE -> "Pause"
-            DONE, null -> ""
-        }
-    }
-
-    val pauseResumeButtonVisible: LiveData<Boolean> = _timerState.map {
-        when (it) {
-            INIT, WORK, PAUSE -> true
-            DONE, null -> false
-        }
-    }
-
-    val startStopButtonText: LiveData<String> = _isTimerRunning.map {
-        if (it) "Stop" else "Resume"
-    }
+    val uiState = _uiState.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(),
+        initialValue = TimerUiState()
+    )
 
     fun startTimer(timeInterval: TimeInterval) {
         this.timeInterval = timeInterval
-        _time.value = timeInterval.workTime
-        _remainingIntervals.value = timeInterval.intervals
-        startTimer(DEFAULT_START_TIME)
+        _uiState.value = _uiState.value.copy(
+            remainingTime = DEFAULT_PREPARE_TIME,
+            remainingIntervals = timeInterval.intervals
+        )
+        startTimer(DEFAULT_PREPARE_TIME)
     }
 
     private fun startTimer(startTime: Long) {
         timer = object : CountDownTimer(startTime, DEFAULT_TICK_TIME) {
             override fun onTick(millisUntilFinished: Long) {
-                _time.value = millisUntilFinished
+                _uiState.value = _uiState.value.copy(
+                    remainingTime = millisUntilFinished,
+                    percentageDone = calculatePercentageDone(millisUntilFinished)
+                )
             }
 
             override fun onFinish() {
-                _time.value = 0
-                _isTimerRunning.value = false
+                _uiState.value = _uiState.value.copy(
+                    remainingTime = 0,
+                    isTimerRunning = false,
+                    percentageDone = 1.0f
+                )
                 evaluateNextInterval()
             }
         }
-        _isTimerRunning.value = true
+        _uiState.value = _uiState.value.copy(isTimerRunning = true)
         timer.start()
     }
 
+    private fun calculatePercentageDone(millisUntilFinished: Long): Float {
+        val maxValue: Float = when (_uiState.value.intervalState) {
+            INIT -> DEFAULT_PREPARE_TIME.toFloat()
+            WORK -> timeInterval.workTime.toFloat()
+            PAUSE -> timeInterval.pauseTime.toFloat()
+            DONE -> 1.0f
+        }
+        return 1 - (millisUntilFinished.toFloat() / maxValue)
+    }
+
     private fun evaluateNextInterval() {
-        when (_timerState.value) {
+        when (_uiState.value.intervalState) {
             INIT -> {
-                _timerState.value = WORK
+                _uiState.value = _uiState.value.copy(intervalState = WORK)
                 startTimer(timeInterval.workTime)
             }
 
             WORK -> {
-                _remainingIntervals.value = _remainingIntervals.value?.minus(1)
-                if (_remainingIntervals.value == 0) {
-                    _timerState.value = DONE
-                    _time.value = -1 // set _time to trigger change in timeProgress
+                val state = if (_uiState.value.remainingIntervals == 1) {
+                    DONE
                 } else {
-                    _timerState.value = PAUSE
                     startTimer(timeInterval.pauseTime)
+                    PAUSE
                 }
+                _uiState.value = _uiState.value.copy(
+                    intervalState = state,
+                    remainingIntervals = _uiState.value.remainingIntervals - 1
+                )
             }
 
             PAUSE -> {
-                _timerState.value = WORK
+                _uiState.value = _uiState.value.copy(intervalState = WORK)
                 startTimer(timeInterval.workTime)
             }
 
-            DONE, null -> {
+            DONE -> {
                 // do nothing
             }
         }
     }
 
     fun pauseOrResumeTimer() {
-        if (_isTimerRunning.value == true) {
+        if (_uiState.value.isTimerRunning) {
             timer.cancel()
-            _isTimerRunning.value = false
+            _uiState.value = _uiState.value.copy(isTimerRunning = false)
         } else {
-            startTimer(_time.value!!)
+            startTimer(_uiState.value.remainingTime)
         }
     }
 
     fun stopTimer() {
         timer.cancel()
-        _isTimerRunning.value = false
-        _time.value = 0
+        _uiState.value = _uiState.value.copy(remainingTime = 0, isTimerRunning = false)
     }
 
     companion object {
-        private const val DEFAULT_START_TIME = 5_000L
+        private const val DEFAULT_PREPARE_TIME = 5_000L
         private const val DEFAULT_TICK_TIME = 10L
     }
 
-    private enum class TimerState {
-        INIT, WORK, PAUSE, DONE
+    enum class IntervalState {
+        INIT, WORK, PAUSE, DONE;
+
+        fun toStateString(): String = when (this) {
+            INIT -> "Prepare"
+            WORK -> "Work"
+            PAUSE -> "Pause"
+            DONE -> "Done"
+        }
+
+        fun toStateColor() = when (this) {
+            INIT -> Color.Yellow
+            WORK -> Color.Green
+            PAUSE -> Color.Blue
+            DONE -> Color.Cyan
+        }
+    }
+
+    data class TimerUiState(
+        val remainingTime: Long = DEFAULT_PREPARE_TIME,
+        val percentageDone: Float = 0.0f,
+        val remainingIntervals: Int = 0,
+        val intervalState: IntervalState = INIT,
+        val isTimerRunning: Boolean = false,
+    ) {
+        fun getRemainingTimeFormatted(): String {
+            if (intervalState == DONE) return "Done"
+            val millis = remainingTime % 1000
+            val second = remainingTime / 1000 % 60
+            val minute = remainingTime / (1000 * 60) % 60
+            return if (minute == 0L) {
+                "%d,%d".format(second, millis / 100)
+            } else {
+                "%d:%d,%d".format(minute, second, millis / 100)
+            }
+        }
+
+        fun getResumeStopButtonText(): String {
+            return if (isTimerRunning) "Stop" else "Resume"
+        }
+
+        fun isPauseResumeButtonVisible(): Boolean {
+            return when (intervalState) {
+                INIT, WORK, PAUSE -> true
+                DONE -> false
+            }
+        }
+
+        fun getRemainingIntervalsText(): String {
+            if (remainingIntervals == 1) return "Last Interval"
+            if (remainingIntervals <= 0) return ""
+            return remainingIntervals.toString()
+        }
     }
 }
