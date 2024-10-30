@@ -3,27 +3,20 @@ package com.example.simpleintervaltimer.timer
 import android.os.CountDownTimer
 import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import com.example.simpleintervaltimer.timer.TimerViewModel.IntervalState.DONE
 import com.example.simpleintervaltimer.timer.TimerViewModel.IntervalState.INIT
 import com.example.simpleintervaltimer.timer.TimerViewModel.IntervalState.PAUSE
 import com.example.simpleintervaltimer.timer.TimerViewModel.IntervalState.WORK
 import com.example.simpleintervaltimer.timer.data.TimeInterval
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.StateFlow
 
 class TimerViewModel : ViewModel() {
     private lateinit var timer: CountDownTimer
     private lateinit var timeInterval: TimeInterval
 
     private val _uiState: MutableStateFlow<TimerUiState> = MutableStateFlow(TimerUiState())
-
-    val uiState = _uiState.stateIn(
-        scope = viewModelScope,
-        started = SharingStarted.WhileSubscribed(),
-        initialValue = TimerUiState()
-    )
+    val uiState: StateFlow<TimerUiState> = _uiState
 
     fun startTimer(timeInterval: TimeInterval) {
         this.timeInterval = timeInterval
@@ -49,11 +42,10 @@ class TimerViewModel : ViewModel() {
                     isTimerRunning = false,
                     percentageDone = 1.0f
                 )
-                evaluateNextInterval()
+                onTimerFinished()
             }
-        }
+        }.start()
         _uiState.value = _uiState.value.copy(isTimerRunning = true)
-        timer.start()
     }
 
     private fun calculatePercentageDone(millisUntilFinished: Long): Float {
@@ -66,7 +58,7 @@ class TimerViewModel : ViewModel() {
         return 1 - (millisUntilFinished.toFloat() / maxValue)
     }
 
-    private fun evaluateNextInterval() {
+    private fun onTimerFinished() {
         when (_uiState.value.intervalState) {
             INIT -> {
                 _uiState.value = _uiState.value.copy(intervalState = WORK)
@@ -92,7 +84,7 @@ class TimerViewModel : ViewModel() {
             }
 
             DONE -> {
-                // do nothing
+                // nothing to do
             }
         }
     }

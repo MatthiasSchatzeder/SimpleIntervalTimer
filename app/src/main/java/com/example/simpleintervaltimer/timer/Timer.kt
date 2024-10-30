@@ -36,7 +36,7 @@ fun Timer(timeInterval: TimeInterval, timerViewModel: TimerViewModel = viewModel
         }
     }
     ConstraintLayout(modifier = Modifier.fillMaxSize()) {
-        val (constRefTextIntervalsLeft, constRefProgressTimer, constRefProgressState, constRefPlayPauseButton) = createRefs()
+        val (constRefTextIntervalsLeft, constRefProgressTimer, constRefTextProgressState, constRefButtonPauseResume) = createRefs()
         Text(
             modifier = Modifier
                 .constrainAs(constRefTextIntervalsLeft) {
@@ -63,7 +63,7 @@ fun Timer(timeInterval: TimeInterval, timerViewModel: TimerViewModel = viewModel
         )
         Text(
             modifier = Modifier
-                .constrainAs(constRefProgressState) {
+                .constrainAs(constRefTextProgressState) {
                     top.linkTo(constRefProgressTimer.bottom, margin = 20.dp)
                 }
                 .fillMaxWidth(),
@@ -76,8 +76,8 @@ fun Timer(timeInterval: TimeInterval, timerViewModel: TimerViewModel = viewModel
         )
         PauseResumeButton(
             modifier = Modifier
-                .constrainAs(constRefPlayPauseButton) {
-                    top.linkTo(constRefProgressState.bottom)
+                .constrainAs(constRefButtonPauseResume) {
+                    top.linkTo(constRefTextProgressState.bottom)
                     start.linkTo(parent.start)
                     end.linkTo(parent.end)
                 }
