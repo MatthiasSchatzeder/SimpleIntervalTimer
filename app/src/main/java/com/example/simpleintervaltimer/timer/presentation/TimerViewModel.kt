@@ -1,13 +1,13 @@
-package com.example.simpleintervaltimer.timer
+package com.example.simpleintervaltimer.timer.presentation
 
 import android.os.CountDownTimer
 import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.ViewModel
-import com.example.simpleintervaltimer.timer.TimerViewModel.IntervalState.DONE
-import com.example.simpleintervaltimer.timer.TimerViewModel.IntervalState.INIT
-import com.example.simpleintervaltimer.timer.TimerViewModel.IntervalState.PAUSE
-import com.example.simpleintervaltimer.timer.TimerViewModel.IntervalState.WORK
 import com.example.simpleintervaltimer.timer.data.TimeInterval
+import com.example.simpleintervaltimer.timer.presentation.TimerViewModel.IntervalState.DONE
+import com.example.simpleintervaltimer.timer.presentation.TimerViewModel.IntervalState.INIT
+import com.example.simpleintervaltimer.timer.presentation.TimerViewModel.IntervalState.PAUSE
+import com.example.simpleintervaltimer.timer.presentation.TimerViewModel.IntervalState.WORK
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 

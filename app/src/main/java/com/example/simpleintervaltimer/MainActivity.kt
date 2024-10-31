@@ -6,7 +6,7 @@ import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
-import com.example.simpleintervaltimer.timer.Timer
+import com.example.simpleintervaltimer.timer.presentation.TimerScreen
 import com.example.simpleintervaltimer.timer.data.TimeInterval
 import com.example.simpleintervaltimer.ui.theme.Background
 import com.example.simpleintervaltimer.ui.theme.SimpleintervaltimerTheme
@@ -22,7 +22,7 @@ class MainActivity : ComponentActivity() {
                 Surface(
                     modifier = Modifier.fillMaxSize(), color = Background
                 ) {
-                    Timer(TimeInterval(5_000, 2_000, 2))
+                    TimerScreen(TimeInterval(5_000, 2_000, 2))
                 }
             }
         }

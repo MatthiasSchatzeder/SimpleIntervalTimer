@@ -1,4 +1,4 @@
-package com.example.simpleintervaltimer.timer
+package com.example.simpleintervaltimer.timer.presentation
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -27,7 +27,7 @@ import com.example.simpleintervaltimer.ui.theme.Grey2
 import com.example.simpleintervaltimer.ui.theme.SimpleintervaltimerTheme
 
 @Composable
-fun Timer(timeInterval: TimeInterval, timerViewModel: TimerViewModel = viewModel()) {
+fun TimerScreen(timeInterval: TimeInterval, timerViewModel: TimerViewModel = viewModel()) {
     val uiState = timerViewModel.uiState.collectAsState().value
     DisposableEffect(key1 = true) {
         timerViewModel.startTimer(timeInterval)
@@ -138,6 +138,6 @@ private fun PauseResumeButton(
 @Composable
 fun TimerPreview() {
     SimpleintervaltimerTheme {
-        Timer(TimeInterval(5_000, 2_000, 10))
+        TimerScreen(TimeInterval(5_000, 2_000, 10))
     }
 }
