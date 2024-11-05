@@ -19,6 +19,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
@@ -26,6 +27,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.simpleintervaltimer.common.data.appSettingsDataStore
 import com.example.simpleintervaltimer.timer.data.TimeInterval
 import com.example.simpleintervaltimer.ui.theme.SimpleintervaltimerTheme
 
@@ -44,10 +46,14 @@ fun HomeScreen(
 fun QuickStartTimer(
     modifier: Modifier = Modifier,
     onStartTimer: (timeInterval: TimeInterval) -> Unit,
-    quickStartViewModel: QuickStartViewModel = viewModel()
+    quickStartViewModel: QuickStartViewModel = viewModel(
+        factory = QuickStartViewModelFactory(LocalContext.current.appSettingsDataStore)
+    )
 ) {
     val uiState = quickStartViewModel.uiState.collectAsState().value
-
+    if (uiState.isLoading) {
+        return
+    }
     Column(
         modifier = modifier
             .fillMaxSize()
@@ -96,8 +102,7 @@ fun QuickStartTimer(
         Button(
             modifier = Modifier.fillMaxWidth(),
             onClick = {
-                quickStartViewModel.validateInput()
-                onStartTimer(uiState.getTimeInterval())
+                quickStartViewModel.startTimer(onStartTimer)
             }
         ) {
             Text(

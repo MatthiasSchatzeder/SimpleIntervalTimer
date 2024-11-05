@@ -1,16 +1,39 @@
 package com.example.simpleintervaltimer.home.presentation
 
 import android.util.Log
+import androidx.datastore.core.DataStore
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.viewModelScope
+import com.example.simpleintervaltimer.common.data.AppSettings
 import com.example.simpleintervaltimer.timer.data.TimeInterval
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
-class QuickStartViewModel : ViewModel() {
+class QuickStartViewModel(private val appSettingsDataStore: DataStore<AppSettings>) : ViewModel() {
     private val _uiState = MutableStateFlow(UiState())
     val uiState: StateFlow<UiState> = _uiState
 
+    init {
+        viewModelScope.launch {
+            _uiState.value = UiState(isLoading = true)
+            val quickStartTimeInterval = withContext(Dispatchers.Default) {
+                appSettingsDataStore.data.first().quickStartTimeInterval
+            }
+            _uiState.value = UiState.fromTimeInterval(quickStartTimeInterval)
+        }
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+    }
+
     data class UiState(
+        val isLoading: Boolean = false,
         val intervalCount: String = "10",
         val workIntervalMinutes: String = "0",
         val workIntervalSeconds: String = "30",
@@ -21,6 +44,20 @@ class QuickStartViewModel : ViewModel() {
             val workTime = (workIntervalMinutes.toLong() * 60 + workIntervalSeconds.toLong()) * 1000L
             val restTime = (restIntervalMinutes.toLong() * 60 + restIntervalSeconds.toLong()) * 1000L
             return TimeInterval(workTime, restTime, intervalCount.toInt())
+        }
+
+        companion object {
+            fun fromTimeInterval(timeInterval: TimeInterval): UiState {
+                val workTime = timeInterval.workTime / 1000
+                val restTime = timeInterval.restTime / 1000
+                return UiState(
+                    intervalCount = timeInterval.intervals.toString(),
+                    workIntervalMinutes = (workTime / 60).toString(),
+                    workIntervalSeconds = (workTime % 60).toString(),
+                    restIntervalMinutes = (restTime / 60).toString(),
+                    restIntervalSeconds = (restTime % 60).toString()
+                )
+            }
         }
     }
 
@@ -71,4 +108,22 @@ class QuickStartViewModel : ViewModel() {
             return minValue.toString()
         }
     }
+
+    fun startTimer(onStartTimer: (timeInterval: TimeInterval) -> Unit) {
+        validateInput()
+        persistQuickStartTimeInterval()
+        onStartTimer(_uiState.value.getTimeInterval())
+    }
+
+    private fun persistQuickStartTimeInterval() {
+        viewModelScope.launch {
+            appSettingsDataStore.updateData { appSettings ->
+                appSettings.copy(quickStartTimeInterval = _uiState.value.getTimeInterval())
+            }
+        }
+    }
+}
+
+class QuickStartViewModelFactory(private val appSettingsDataStore: DataStore<AppSettings>) : ViewModelProvider.NewInstanceFactory() {
+    override fun <T : ViewModel> create(modelClass: Class<T>): T = QuickStartViewModel(appSettingsDataStore) as T
 }
