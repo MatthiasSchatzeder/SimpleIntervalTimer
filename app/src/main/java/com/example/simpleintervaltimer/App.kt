@@ -1,5 +1,6 @@
 package com.example.simpleintervaltimer
 
+import android.content.pm.ActivityInfo
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
@@ -28,6 +29,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
+import com.example.simpleintervaltimer.common.data.presentation.LockScreenOrientation
 import com.example.simpleintervaltimer.home.presentation.HomeScreen
 import com.example.simpleintervaltimer.interval_list.presentation.IntervalListScreen
 import com.example.simpleintervaltimer.timer.data.TimeInterval
@@ -50,6 +52,7 @@ fun App() {
     Scaffold(
         bottomBar = { BottomNavBar(navController) }
     ) { innerPadding ->
+        LockScreenOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT)
         NavHost(
             navController = navController,
             startDestination = HomeRoute,

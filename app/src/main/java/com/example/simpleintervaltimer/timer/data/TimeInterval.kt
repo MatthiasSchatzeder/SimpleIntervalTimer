@@ -8,7 +8,7 @@ import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 
 @Serializable
-data class TimeInterval(val workTime: Long, val pauseTime: Long, val intervals: Int) {
+data class TimeInterval(val workTime: Long, val restTime: Long, val intervals: Int) {
     /**
      * Custom NavType for TimeInterval used for serializing and deserializing TimeInterval objects
      */

@@ -6,7 +6,7 @@ import androidx.lifecycle.ViewModel
 import com.example.simpleintervaltimer.timer.data.TimeInterval
 import com.example.simpleintervaltimer.timer.presentation.TimerViewModel.IntervalState.DONE
 import com.example.simpleintervaltimer.timer.presentation.TimerViewModel.IntervalState.INIT
-import com.example.simpleintervaltimer.timer.presentation.TimerViewModel.IntervalState.PAUSE
+import com.example.simpleintervaltimer.timer.presentation.TimerViewModel.IntervalState.REST
 import com.example.simpleintervaltimer.timer.presentation.TimerViewModel.IntervalState.WORK
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -52,7 +52,7 @@ class TimerViewModel : ViewModel() {
         val maxValue: Float = when (_uiState.value.intervalState) {
             INIT -> DEFAULT_PREPARE_TIME.toFloat()
             WORK -> timeInterval.workTime.toFloat()
-            PAUSE -> timeInterval.pauseTime.toFloat()
+            REST -> timeInterval.restTime.toFloat()
             DONE -> 1.0f
         }
         return 1 - (millisUntilFinished.toFloat() / maxValue)
@@ -69,8 +69,8 @@ class TimerViewModel : ViewModel() {
                 val state = if (_uiState.value.remainingIntervals == 1) {
                     DONE
                 } else {
-                    startTimer(timeInterval.pauseTime)
-                    PAUSE
+                    startTimer(timeInterval.restTime)
+                    REST
                 }
                 _uiState.value = _uiState.value.copy(
                     intervalState = state,
@@ -78,7 +78,7 @@ class TimerViewModel : ViewModel() {
                 )
             }
 
-            PAUSE -> {
+            REST -> {
                 _uiState.value = _uiState.value.copy(intervalState = WORK)
                 startTimer(timeInterval.workTime)
             }
@@ -109,19 +109,19 @@ class TimerViewModel : ViewModel() {
     }
 
     enum class IntervalState {
-        INIT, WORK, PAUSE, DONE;
+        INIT, WORK, REST, DONE;
 
         fun toStateString(): String = when (this) {
             INIT -> "Prepare"
             WORK -> "Work"
-            PAUSE -> "Pause"
+            REST -> "Rest"
             DONE -> "Done"
         }
 
         fun toStateColor() = when (this) {
             INIT -> Color.Yellow
             WORK -> Color.Green
-            PAUSE -> Color.Blue
+            REST -> Color.Blue
             DONE -> Color.Cyan
         }
     }
@@ -151,7 +151,7 @@ class TimerViewModel : ViewModel() {
 
         fun isPauseResumeButtonVisible(): Boolean {
             return when (intervalState) {
-                INIT, WORK, PAUSE -> true
+                INIT, WORK, REST -> true
                 DONE -> false
             }
         }
