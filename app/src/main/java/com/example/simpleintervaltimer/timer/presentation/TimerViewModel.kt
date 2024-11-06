@@ -3,6 +3,7 @@ package com.example.simpleintervaltimer.timer.presentation
 import android.os.CountDownTimer
 import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import com.example.simpleintervaltimer.timer.data.TimeInterval
 import com.example.simpleintervaltimer.timer.presentation.TimerViewModel.IntervalState.DONE
 import com.example.simpleintervaltimer.timer.presentation.TimerViewModel.IntervalState.INIT
@@ -11,15 +12,18 @@ import com.example.simpleintervaltimer.timer.presentation.TimerViewModel.Interva
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
-class TimerViewModel : ViewModel() {
+class TimerViewModelFactory(private val timeInterval: TimeInterval) : ViewModelProvider.NewInstanceFactory() {
+    @Suppress("UNCHECKED_CAST")
+    override fun <T : ViewModel> create(modelClass: Class<T>): T = TimerViewModel(timeInterval) as T
+}
+
+class TimerViewModel(private val timeInterval: TimeInterval) : ViewModel() {
     private lateinit var timer: CountDownTimer
-    private lateinit var timeInterval: TimeInterval
 
     private val _uiState: MutableStateFlow<TimerUiState> = MutableStateFlow(TimerUiState())
     val uiState: StateFlow<TimerUiState> = _uiState
 
-    fun startTimer(timeInterval: TimeInterval) {
-        this.timeInterval = timeInterval
+    fun startTimer() {
         _uiState.value = _uiState.value.copy(
             remainingTime = DEFAULT_PREPARE_TIME,
             remainingIntervals = timeInterval.intervals

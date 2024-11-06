@@ -28,11 +28,16 @@ import com.example.simpleintervaltimer.ui.theme.Grey2
 import com.example.simpleintervaltimer.ui.theme.SimpleintervaltimerTheme
 
 @Composable
-fun TimerScreen(timeInterval: TimeInterval, timerViewModel: TimerViewModel = viewModel()) {
+fun TimerScreen(
+    timeInterval: TimeInterval,
+    timerViewModel: TimerViewModel = viewModel(
+        factory = TimerViewModelFactory(timeInterval)
+    )
+) {
     val uiState = timerViewModel.uiState.collectAsState().value
     KeepScreenOn()
     DisposableEffect(key1 = true) {
-        timerViewModel.startTimer(timeInterval)
+        timerViewModel.startTimer()
         onDispose {
             timerViewModel.stopTimer()
         }
