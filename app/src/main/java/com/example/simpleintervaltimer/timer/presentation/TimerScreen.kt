@@ -22,6 +22,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.simpleintervaltimer.common.presentation.KeepScreenOn
 import com.example.simpleintervaltimer.timer.data.TimeInterval
 import com.example.simpleintervaltimer.ui.theme.Grey2
 import com.example.simpleintervaltimer.ui.theme.SimpleintervaltimerTheme
@@ -29,6 +30,7 @@ import com.example.simpleintervaltimer.ui.theme.SimpleintervaltimerTheme
 @Composable
 fun TimerScreen(timeInterval: TimeInterval, timerViewModel: TimerViewModel = viewModel()) {
     val uiState = timerViewModel.uiState.collectAsState().value
+    KeepScreenOn()
     DisposableEffect(key1 = true) {
         timerViewModel.startTimer(timeInterval)
         onDispose {
