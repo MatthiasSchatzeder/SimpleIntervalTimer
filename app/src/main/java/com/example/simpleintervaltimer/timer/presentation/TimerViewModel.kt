@@ -85,13 +85,13 @@ class TimerViewModel(
     }
 
     private fun calculatePercentageDone(millisUntilFinished: Long): Float {
-        val maxValue: Float = when (_uiState.value.intervalState) {
-            INIT -> DEFAULT_PREPARE_TIME.toFloat()
-            WORK -> timeInterval.workTime.toFloat()
-            REST -> timeInterval.restTime.toFloat()
-            DONE -> 1.0f
+        val maxValue: Long = when (_uiState.value.intervalState) {
+            INIT -> DEFAULT_PREPARE_TIME
+            WORK -> timeInterval.workTime
+            REST -> timeInterval.restTime
+            DONE -> 1
         }
-        return 1 - (millisUntilFinished.toFloat() / maxValue)
+        return 1 - (millisUntilFinished.toFloat() / maxValue.toFloat())
     }
 
     private fun onTimerFinished() {
