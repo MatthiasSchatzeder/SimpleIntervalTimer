@@ -50,6 +50,8 @@ android {
     }
 }
 
+val media3Version = "1.4.1"
+
 dependencies {
     implementation("androidx.core:core-ktx:1.13.1")
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.8.6")
@@ -65,6 +67,7 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.3")
     implementation("androidx.compose.material:material:1.7.5")
     implementation("androidx.datastore:datastore:1.1.1")
+    implementation("androidx.media3:media3-exoplayer:$media3Version")
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.2.1")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.6.1")

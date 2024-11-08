@@ -14,6 +14,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -22,15 +23,35 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.media3.exoplayer.ExoPlayer
+import com.example.simpleintervaltimer.R
+import com.example.simpleintervaltimer.common.presentation.KeepScreenOn
 import com.example.simpleintervaltimer.timer.data.TimeInterval
+import com.example.simpleintervaltimer.timer.data.TimerSoundDefinition
 import com.example.simpleintervaltimer.ui.theme.Grey2
 import com.example.simpleintervaltimer.ui.theme.SimpleintervaltimerTheme
 
 @Composable
-fun TimerScreen(timeInterval: TimeInterval, timerViewModel: TimerViewModel = viewModel()) {
+fun TimerScreen(
+    timeInterval: TimeInterval,
+    timerViewModel: TimerViewModel = viewModel(
+        factory = TimerViewModelFactory(
+            timeInterval,
+            ExoPlayer.Builder(LocalContext.current).build(),
+            TimerSoundDefinition.fromResourceIds(
+                R.raw.beep,
+                R.raw.end_interval_beep,
+                R.raw.beep,
+                R.raw.end_interval_beep,
+                R.raw.end_timer_beep
+            )
+        )
+    )
+) {
     val uiState = timerViewModel.uiState.collectAsState().value
+    KeepScreenOn()
     DisposableEffect(key1 = true) {
-        timerViewModel.startTimer(timeInterval)
+        timerViewModel.startTimer()
         onDispose {
             timerViewModel.stopTimer()
         }

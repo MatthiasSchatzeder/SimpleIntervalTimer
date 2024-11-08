@@ -3,7 +3,11 @@ package com.example.simpleintervaltimer.timer.presentation
 import android.os.CountDownTimer
 import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
+import androidx.media3.common.MediaItem
+import androidx.media3.exoplayer.ExoPlayer
 import com.example.simpleintervaltimer.timer.data.TimeInterval
+import com.example.simpleintervaltimer.timer.data.TimerSoundDefinition
 import com.example.simpleintervaltimer.timer.presentation.TimerViewModel.IntervalState.DONE
 import com.example.simpleintervaltimer.timer.presentation.TimerViewModel.IntervalState.INIT
 import com.example.simpleintervaltimer.timer.presentation.TimerViewModel.IntervalState.REST
@@ -11,15 +15,33 @@ import com.example.simpleintervaltimer.timer.presentation.TimerViewModel.Interva
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
-class TimerViewModel : ViewModel() {
+class TimerViewModelFactory(
+    private val timeInterval: TimeInterval,
+    private val player: ExoPlayer,
+    private val timerSoundDefinition: TimerSoundDefinition
+) : ViewModelProvider.Factory {
+    @Suppress("UNCHECKED_CAST")
+    override fun <T : ViewModel> create(modelClass: Class<T>): T = TimerViewModel(timeInterval, player, timerSoundDefinition) as T
+}
+
+class TimerViewModel(
+    private val timeInterval: TimeInterval,
+    private val player: ExoPlayer,
+    private val soundDefinition: TimerSoundDefinition
+) : ViewModel() {
     private lateinit var timer: CountDownTimer
-    private lateinit var timeInterval: TimeInterval
+    private var soundTriggerSecond: Int = INITIAL_SOUND_TRIGGER_SECOND
 
     private val _uiState: MutableStateFlow<TimerUiState> = MutableStateFlow(TimerUiState())
     val uiState: StateFlow<TimerUiState> = _uiState
 
-    fun startTimer(timeInterval: TimeInterval) {
-        this.timeInterval = timeInterval
+    override fun onCleared() {
+        super.onCleared()
+        timer.cancel()
+        player.release()
+    }
+
+    fun startTimer() {
         _uiState.value = _uiState.value.copy(
             remainingTime = DEFAULT_PREPARE_TIME,
             remainingIntervals = timeInterval.intervals
@@ -34,6 +56,20 @@ class TimerViewModel : ViewModel() {
                     remainingTime = millisUntilFinished,
                     percentageDone = calculatePercentageDone(millisUntilFinished)
                 )
+                playCountDownSound(millisUntilFinished)
+            }
+
+            private fun playCountDownSound(millisUntilFinished: Long) {
+                if (millisUntilFinished.getDisplayMinutes() > 0) return
+                val millis = millisUntilFinished.getDisplayMillis()
+                val seconds = millisUntilFinished.getDisplaySeconds()
+                if (seconds == soundTriggerSecond.toLong() && millis < SOUND_TRIGGER_MILLIS_THRESHOLD) {
+                    val sound = if (_uiState.value.intervalState == WORK) soundDefinition.preEndWorkIntervalSound
+                    else soundDefinition.preEndRestIntervalSound
+                    playSound(sound)
+                    soundTriggerSecond = if (soundTriggerSecond == 1) INITIAL_SOUND_TRIGGER_SECOND
+                    else soundTriggerSecond - 1
+                }
             }
 
             override fun onFinish() {
@@ -49,26 +85,29 @@ class TimerViewModel : ViewModel() {
     }
 
     private fun calculatePercentageDone(millisUntilFinished: Long): Float {
-        val maxValue: Float = when (_uiState.value.intervalState) {
-            INIT -> DEFAULT_PREPARE_TIME.toFloat()
-            WORK -> timeInterval.workTime.toFloat()
-            REST -> timeInterval.restTime.toFloat()
-            DONE -> 1.0f
+        val maxValue: Long = when (_uiState.value.intervalState) {
+            INIT -> DEFAULT_PREPARE_TIME
+            WORK -> timeInterval.workTime
+            REST -> timeInterval.restTime
+            DONE -> 1
         }
-        return 1 - (millisUntilFinished.toFloat() / maxValue)
+        return 1 - (millisUntilFinished.toFloat() / maxValue.toFloat())
     }
 
     private fun onTimerFinished() {
         when (_uiState.value.intervalState) {
-            INIT -> {
+            INIT, REST -> {
+                playSound(soundDefinition.endRestIntervalSound)
                 _uiState.value = _uiState.value.copy(intervalState = WORK)
                 startTimer(timeInterval.workTime)
             }
 
             WORK -> {
                 val state = if (_uiState.value.remainingIntervals == 1) {
+                    playSound(soundDefinition.finishSound)
                     DONE
                 } else {
+                    playSound(soundDefinition.endWorkIntervalSound)
                     startTimer(timeInterval.restTime)
                     REST
                 }
@@ -76,11 +115,6 @@ class TimerViewModel : ViewModel() {
                     intervalState = state,
                     remainingIntervals = _uiState.value.remainingIntervals - 1
                 )
-            }
-
-            REST -> {
-                _uiState.value = _uiState.value.copy(intervalState = WORK)
-                startTimer(timeInterval.workTime)
             }
 
             DONE -> {
@@ -103,9 +137,18 @@ class TimerViewModel : ViewModel() {
         _uiState.value = _uiState.value.copy(remainingTime = 0, isTimerRunning = false)
     }
 
+    private fun playSound(sound: MediaItem) {
+        player.stop()
+        player.setMediaItem(sound)
+        player.prepare()
+        player.play()
+    }
+
     companion object {
-        private const val DEFAULT_PREPARE_TIME = 5_000L
-        private const val DEFAULT_TICK_TIME = 10L
+        private const val DEFAULT_PREPARE_TIME: Long = 5_000L
+        private const val DEFAULT_TICK_TIME: Long = 10L
+        private const val INITIAL_SOUND_TRIGGER_SECOND: Int = 3
+        private const val SOUND_TRIGGER_MILLIS_THRESHOLD: Long = 100L
     }
 
     enum class IntervalState {
@@ -135,13 +178,13 @@ class TimerViewModel : ViewModel() {
     ) {
         fun getRemainingTimeFormatted(): String {
             if (intervalState == DONE) return "Done"
-            val millis = remainingTime % 1000
-            val second = remainingTime / 1000 % 60
-            val minute = remainingTime / (1000 * 60) % 60
-            return if (minute == 0L) {
-                "%d,%d".format(second, millis / 100)
+            val millis = remainingTime.getDisplayMillis()
+            val seconds = remainingTime.getDisplaySeconds()
+            val minutes = remainingTime.getDisplayMinutes()
+            return if (minutes == 0L) {
+                "%d,%d".format(seconds, millis / 100)
             } else {
-                "%d:%d,%d".format(minute, second, millis / 100)
+                "%d:%d,%d".format(minutes, seconds, millis / 100)
             }
         }
 
@@ -163,3 +206,7 @@ class TimerViewModel : ViewModel() {
         }
     }
 }
+
+private fun Long.getDisplayMillis() = this % 1000
+private fun Long.getDisplaySeconds() = this / 1000 % 60
+private fun Long.getDisplayMinutes() = this / (1000 * 60) % 60
