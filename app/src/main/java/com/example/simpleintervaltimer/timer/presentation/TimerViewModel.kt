@@ -133,9 +133,12 @@ class TimerViewModel(
         }
     }
 
-    fun stopTimer() {
-        timer.cancel()
-        _uiState.value = _uiState.value.copy(remainingTime = 0, isTimerRunning = false)
+    fun showCloseTimerDialog() {
+        _uiState.value = _uiState.value.copy(showCloseTimerDialog = true)
+    }
+
+    fun dismissCloseTimerDialog() {
+        _uiState.value = _uiState.value.copy(showCloseTimerDialog = false)
     }
 
     private fun playSound(sound: MediaItem) {
@@ -176,6 +179,7 @@ class TimerViewModel(
         val remainingIntervals: Int = 0,
         val intervalState: IntervalState = INIT,
         val isTimerRunning: Boolean = false,
+        val showCloseTimerDialog: Boolean = false,
     ) {
         fun getRemainingTimeFormatted(): String {
             if (intervalState == DONE) return "Done"

@@ -77,7 +77,10 @@ fun App() {
                 )
             ) {
                 val timerRoute = it.toRoute<TimerRoute>()
-                TimerScreen(timerRoute.timeInterval)
+                TimerScreen(
+                    timeInterval = timerRoute.timeInterval,
+                    onCloseTimer = { navController.popBackStack() }
+                )
             }
         }
     }
