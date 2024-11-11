@@ -1,15 +1,21 @@
 package com.example.simpleintervaltimer.timer.presentation
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -46,18 +52,39 @@ fun TimerScreen(
                 R.raw.end_timer_beep
             )
         )
-    )
+    ),
+    onCloseTimer: () -> Unit
 ) {
     val uiState = timerViewModel.uiState.collectAsState().value
     KeepScreenOn()
-    DisposableEffect(key1 = true) {
+    LaunchedEffect(key1 = true) {
         timerViewModel.startTimer()
-        onDispose {
-            timerViewModel.stopTimer()
-        }
     }
+    BackHandler {
+        timerViewModel.showCloseTimerDialog()
+    }
+    CloseTimerDialog(
+        uiState.showCloseTimerDialog,
+        onDismissRequest = { timerViewModel.dismissCloseTimerDialog() },
+        onConfirmClose = { onCloseTimer() }
+    )
     ConstraintLayout(modifier = Modifier.fillMaxSize()) {
-        val (constRefTextIntervalsLeft, constRefProgressTimer, constRefTextProgressState, constRefButtonPauseResume) = createRefs()
+        val (constRefIconButtonCloseTimer, constRefTextIntervalsLeft, constRefProgressTimer, constRefTextProgressState, constRefButtonPauseResume) = createRefs()
+        IconButton(
+            modifier = Modifier
+                .constrainAs(constRefIconButtonCloseTimer) {
+                    start.linkTo(parent.start, margin = 8.dp)
+                    top.linkTo(parent.top, margin = 8.dp)
+                },
+            onClick = { timerViewModel.showCloseTimerDialog() },
+            content = {
+                Icon(
+                    modifier = Modifier.size(48.dp),
+                    imageVector = Icons.Default.Close,
+                    contentDescription = null
+                )
+            }
+        )
         Text(
             modifier = Modifier
                 .constrainAs(constRefTextIntervalsLeft) {
@@ -112,6 +139,37 @@ fun TimerScreen(
 }
 
 @Composable
+fun CloseTimerDialog(
+    showDialog: Boolean,
+    onDismissRequest: () -> Unit,
+    onConfirmClose: () -> Unit
+) {
+    if (!showDialog) return
+    AlertDialog(
+        title = { Text("Close Timer") },
+        text = { Text("Are you sure you want to close the timer?") },
+        onDismissRequest = { onDismissRequest() },
+        confirmButton = {
+            Button(
+                onClick = {
+                    onConfirmClose()
+                    onDismissRequest()
+                }
+            ) {
+                Text("Close")
+            }
+        },
+        dismissButton = {
+            Button(
+                onClick = { onDismissRequest() }
+            ) {
+                Text("Cancel")
+            }
+        }
+    )
+}
+
+@Composable
 private fun ProgressTimer(
     modifier: Modifier = Modifier,
     progress: Float,
@@ -159,6 +217,9 @@ private fun PauseResumeButton(
 @Composable
 fun TimerPreview() {
     SimpleintervaltimerTheme {
-        TimerScreen(TimeInterval(5_000, 2_000, 10))
+        TimerScreen(
+            TimeInterval(5_000, 2_000, 10),
+            onCloseTimer = {}
+        )
     }
 }

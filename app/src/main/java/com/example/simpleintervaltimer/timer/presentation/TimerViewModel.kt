@@ -14,6 +14,7 @@ import com.example.simpleintervaltimer.timer.presentation.TimerViewModel.Interva
 import com.example.simpleintervaltimer.timer.presentation.TimerViewModel.IntervalState.WORK
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 
 class TimerViewModelFactory(
     private val timeInterval: TimeInterval,
@@ -33,7 +34,7 @@ class TimerViewModel(
     private var soundTriggerSecond: Int = INITIAL_SOUND_TRIGGER_SECOND
 
     private val _uiState: MutableStateFlow<TimerUiState> = MutableStateFlow(TimerUiState())
-    val uiState: StateFlow<TimerUiState> = _uiState
+    val uiState: StateFlow<TimerUiState> = _uiState.asStateFlow()
 
     override fun onCleared() {
         super.onCleared()
@@ -132,9 +133,12 @@ class TimerViewModel(
         }
     }
 
-    fun stopTimer() {
-        timer.cancel()
-        _uiState.value = _uiState.value.copy(remainingTime = 0, isTimerRunning = false)
+    fun showCloseTimerDialog() {
+        _uiState.value = _uiState.value.copy(showCloseTimerDialog = true)
+    }
+
+    fun dismissCloseTimerDialog() {
+        _uiState.value = _uiState.value.copy(showCloseTimerDialog = false)
     }
 
     private fun playSound(sound: MediaItem) {
@@ -175,6 +179,7 @@ class TimerViewModel(
         val remainingIntervals: Int = 0,
         val intervalState: IntervalState = INIT,
         val isTimerRunning: Boolean = false,
+        val showCloseTimerDialog: Boolean = false,
     ) {
         fun getRemainingTimeFormatted(): String {
             if (intervalState == DONE) return "Done"
