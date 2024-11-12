@@ -15,7 +15,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.onFocusChanged
@@ -26,10 +26,14 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.simpleintervaltimer.timer.data.appSettingsDataStore
+import com.example.simpleintervaltimer.timer.data.data_sources.TimerSettingsLocalDataSource
+import com.example.simpleintervaltimer.timer.data.datastore.timerSettingsDataStore
+import com.example.simpleintervaltimer.timer.data.repositories.TimerSettingsRepository
 import com.example.simpleintervaltimer.timer.domain.models.TimeInterval
 import com.example.simpleintervaltimer.ui.theme.SimpleintervaltimerTheme
+import kotlinx.coroutines.Dispatchers
 
 @Composable
 fun HomeScreen(
@@ -47,10 +51,17 @@ fun QuickStartTimer(
     modifier: Modifier = Modifier,
     onStartTimer: (timeInterval: TimeInterval) -> Unit,
     quickStartViewModel: QuickStartViewModel = viewModel(
-        factory = QuickStartViewModelFactory(LocalContext.current.appSettingsDataStore)
+        factory = QuickStartViewModelFactory(
+            TimerSettingsRepository(
+                TimerSettingsLocalDataSource(
+                    LocalContext.current.timerSettingsDataStore,
+                    Dispatchers.Default
+                )
+            )
+        )
     )
 ) {
-    val uiState = quickStartViewModel.uiState.collectAsState().value
+    val uiState by quickStartViewModel.uiState.collectAsStateWithLifecycle()
     if (uiState.isLoading) {
         return
     }

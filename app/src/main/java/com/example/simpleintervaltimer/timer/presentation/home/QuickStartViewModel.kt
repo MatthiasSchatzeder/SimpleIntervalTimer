@@ -1,30 +1,30 @@
 package com.example.simpleintervaltimer.timer.presentation.home
 
 import android.util.Log
-import androidx.datastore.core.DataStore
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
-import com.example.simpleintervaltimer.timer.data.AppSettings
+import com.example.simpleintervaltimer.timer.data.repositories.TimerSettingsRepository
 import com.example.simpleintervaltimer.timer.domain.models.TimeInterval
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
-class QuickStartViewModel(private val appSettingsDataStore: DataStore<AppSettings>) : ViewModel() {
+class QuickStartViewModelFactory(private val timerSettingsRepository: TimerSettingsRepository) : ViewModelProvider.Factory {
+    @Suppress("UNCHECKED_CAST")
+    override fun <T : ViewModel> create(modelClass: Class<T>): T = QuickStartViewModel(timerSettingsRepository) as T
+}
+
+class QuickStartViewModel(private val timerSettingsRepository: TimerSettingsRepository) : ViewModel() {
     private val _uiState = MutableStateFlow(UiState())
     val uiState: StateFlow<UiState> = _uiState
 
     init {
         viewModelScope.launch {
             _uiState.value = UiState(isLoading = true)
-            val quickStartTimeInterval = withContext(Dispatchers.Default) {
-                appSettingsDataStore.data.first().quickStartTimeInterval
+            timerSettingsRepository.timerSettingsFlow.collect {
+                _uiState.value = UiState.fromTimeInterval(it.quickStartTimeInterval)
             }
-            _uiState.value = UiState.fromTimeInterval(quickStartTimeInterval)
         }
     }
 
@@ -117,13 +117,7 @@ class QuickStartViewModel(private val appSettingsDataStore: DataStore<AppSetting
 
     private fun persistQuickStartTimeInterval() {
         viewModelScope.launch {
-            appSettingsDataStore.updateData { appSettings ->
-                appSettings.copy(quickStartTimeInterval = _uiState.value.getTimeInterval())
-            }
+            timerSettingsRepository.updateQuickStartTimeInterval(_uiState.value.getTimeInterval())
         }
     }
-}
-
-class QuickStartViewModelFactory(private val appSettingsDataStore: DataStore<AppSettings>) : ViewModelProvider.NewInstanceFactory() {
-    override fun <T : ViewModel> create(modelClass: Class<T>): T = QuickStartViewModel(appSettingsDataStore) as T
 }

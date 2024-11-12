@@ -1,4 +1,4 @@
-package com.example.simpleintervaltimer.timer.data
+package com.example.simpleintervaltimer.timer.data.datastore
 
 import android.content.Context
 import androidx.datastore.core.CorruptionException
@@ -11,29 +11,29 @@ import kotlinx.serialization.json.Json
 import java.io.InputStream
 import java.io.OutputStream
 
-val Context.appSettingsDataStore by dataStore("app-settings.json", AppSettingsSerializer)
+val Context.timerSettingsDataStore by dataStore("timer-settings.json", TimerSettingsSerializer)
 
 @Serializable
-data class AppSettings(
+data class TimerSettings(
     val quickStartTimeInterval: TimeInterval = TimeInterval(30_000, 30_000, 10)
 )
 
-private object AppSettingsSerializer : Serializer<AppSettings> {
-    override val defaultValue = AppSettings()
+private object TimerSettingsSerializer : Serializer<TimerSettings> {
+    override val defaultValue = TimerSettings()
 
-    override suspend fun readFrom(input: InputStream): AppSettings {
+    override suspend fun readFrom(input: InputStream): TimerSettings {
         try {
             return Json.decodeFromString(
-                AppSettings.serializer(), input.readBytes().decodeToString()
+                TimerSettings.serializer(), input.readBytes().decodeToString()
             )
         } catch (exception: SerializationException) {
-            throw CorruptionException("Unable to read AppSettings", exception)
+            throw CorruptionException("Unable to read TimerSettings", exception)
         }
     }
 
-    override suspend fun writeTo(appSettings: AppSettings, output: OutputStream) {
+    override suspend fun writeTo(timerSettings: TimerSettings, output: OutputStream) {
         output.write(
-            Json.encodeToString(AppSettings.serializer(), appSettings)
+            Json.encodeToString(TimerSettings.serializer(), timerSettings)
                 .encodeToByteArray()
         )
     }
