@@ -2,6 +2,8 @@
 
 - feature1
     - data
+      - Repository
+      - db
     - domain
         - models
         - use_cases
