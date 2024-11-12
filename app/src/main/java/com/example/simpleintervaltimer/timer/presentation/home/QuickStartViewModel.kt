@@ -1,12 +1,12 @@
-package com.example.simpleintervaltimer.home.presentation
+package com.example.simpleintervaltimer.timer.presentation.home
 
 import android.util.Log
 import androidx.datastore.core.DataStore
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
-import com.example.simpleintervaltimer.common.data.AppSettings
-import com.example.simpleintervaltimer.timer.data.TimeInterval
+import com.example.simpleintervaltimer.timer.data.AppSettings
+import com.example.simpleintervaltimer.timer.domain.models.TimeInterval
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

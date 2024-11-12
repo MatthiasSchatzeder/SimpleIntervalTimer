@@ -1,4 +1,4 @@
-package com.example.simpleintervaltimer.timer.presentation
+package com.example.simpleintervaltimer.timer.presentation.timer
 
 import android.os.CountDownTimer
 import androidx.compose.ui.graphics.Color
@@ -6,12 +6,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.media3.common.MediaItem
 import androidx.media3.exoplayer.ExoPlayer
-import com.example.simpleintervaltimer.timer.data.TimeInterval
-import com.example.simpleintervaltimer.timer.data.TimerSoundDefinition
-import com.example.simpleintervaltimer.timer.presentation.TimerViewModel.IntervalState.DONE
-import com.example.simpleintervaltimer.timer.presentation.TimerViewModel.IntervalState.INIT
-import com.example.simpleintervaltimer.timer.presentation.TimerViewModel.IntervalState.REST
-import com.example.simpleintervaltimer.timer.presentation.TimerViewModel.IntervalState.WORK
+import com.example.simpleintervaltimer.timer.domain.models.TimeInterval
+import com.example.simpleintervaltimer.timer.domain.models.TimerSoundDefinition
+import com.example.simpleintervaltimer.timer.presentation.timer.TimerViewModel.IntervalState.*
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow

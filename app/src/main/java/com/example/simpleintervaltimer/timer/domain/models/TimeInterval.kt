@@ -1,4 +1,4 @@
-package com.example.simpleintervaltimer.timer.data
+package com.example.simpleintervaltimer.timer.domain.models
 
 import android.net.Uri
 import android.os.Bundle

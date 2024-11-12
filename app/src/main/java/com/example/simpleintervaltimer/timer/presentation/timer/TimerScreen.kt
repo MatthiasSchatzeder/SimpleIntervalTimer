@@ -1,4 +1,4 @@
-package com.example.simpleintervaltimer.timer.presentation
+package com.example.simpleintervaltimer.timer.presentation.timer
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Box
@@ -32,8 +32,8 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.media3.exoplayer.ExoPlayer
 import com.example.simpleintervaltimer.R
 import com.example.simpleintervaltimer.common.presentation.KeepScreenOn
-import com.example.simpleintervaltimer.timer.data.TimeInterval
-import com.example.simpleintervaltimer.timer.data.TimerSoundDefinition
+import com.example.simpleintervaltimer.timer.domain.models.TimeInterval
+import com.example.simpleintervaltimer.timer.domain.models.TimerSoundDefinition
 import com.example.simpleintervaltimer.ui.theme.Grey2
 import com.example.simpleintervaltimer.ui.theme.SimpleintervaltimerTheme
 
