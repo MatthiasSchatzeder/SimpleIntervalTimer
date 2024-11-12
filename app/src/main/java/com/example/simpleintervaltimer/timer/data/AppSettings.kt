@@ -1,10 +1,10 @@
-package com.example.simpleintervaltimer.common.data
+package com.example.simpleintervaltimer.timer.data
 
 import android.content.Context
 import androidx.datastore.core.CorruptionException
 import androidx.datastore.core.Serializer
 import androidx.datastore.dataStore
-import com.example.simpleintervaltimer.timer.data.TimeInterval
+import com.example.simpleintervaltimer.timer.domain.models.TimeInterval
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.SerializationException
 import kotlinx.serialization.json.Json

@@ -1,4 +1,4 @@
-package com.example.simpleintervaltimer.interval_list.presentation
+package com.example.simpleintervaltimer.timer.presentation.interval_list
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column

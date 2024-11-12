@@ -1,4 +1,4 @@
-package com.example.simpleintervaltimer
+package com.example.simpleintervaltimer.common.navigation
 
 import android.content.pm.ActivityInfo
 import androidx.compose.animation.AnimatedVisibility
@@ -30,10 +30,10 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
 import com.example.simpleintervaltimer.common.presentation.LockScreenOrientation
-import com.example.simpleintervaltimer.home.presentation.HomeScreen
-import com.example.simpleintervaltimer.interval_list.presentation.IntervalListScreen
-import com.example.simpleintervaltimer.timer.data.TimeInterval
-import com.example.simpleintervaltimer.timer.presentation.TimerScreen
+import com.example.simpleintervaltimer.timer.domain.models.TimeInterval
+import com.example.simpleintervaltimer.timer.presentation.home.HomeScreen
+import com.example.simpleintervaltimer.timer.presentation.interval_list.IntervalListScreen
+import com.example.simpleintervaltimer.timer.presentation.timer.TimerScreen
 import kotlinx.serialization.Serializable
 import kotlin.reflect.typeOf
 
