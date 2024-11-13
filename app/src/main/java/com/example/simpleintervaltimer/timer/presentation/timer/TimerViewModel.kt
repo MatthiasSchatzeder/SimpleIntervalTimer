@@ -6,6 +6,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.media3.common.MediaItem
 import androidx.media3.exoplayer.ExoPlayer
+import com.example.simpleintervaltimer.common.helper.getDisplayMillis
+import com.example.simpleintervaltimer.common.helper.getDisplayMinutes
+import com.example.simpleintervaltimer.common.helper.getDisplaySeconds
 import com.example.simpleintervaltimer.timer.domain.models.TimeInterval
 import com.example.simpleintervaltimer.timer.domain.models.TimerSoundDefinition
 import com.example.simpleintervaltimer.timer.presentation.timer.TimerViewModel.IntervalState.*
@@ -208,7 +211,3 @@ class TimerViewModel(
         }
     }
 }
-
-private fun Long.getDisplayMillis() = this % 1000
-private fun Long.getDisplaySeconds() = this / 1000 % 60
-private fun Long.getDisplayMinutes() = this / (1000 * 60) % 60
