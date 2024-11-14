@@ -64,11 +64,16 @@ fun App() {
                 HomeScreen(
                     onStartTimer = { timeInterval ->
                         navController.navigate(TimerRoute(timeInterval))
-                    })
+                    }
+                )
             }
 
             composable<IntervalListRoute> {
-                IntervalListScreen()
+                IntervalListScreen(
+                    onStartTimer = { timeInterval ->
+                        navController.navigate(TimerRoute(timeInterval))
+                    }
+                )
             }
 
             composable<TimerRoute>(
