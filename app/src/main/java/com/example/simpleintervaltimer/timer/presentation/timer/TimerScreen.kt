@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
@@ -34,6 +33,7 @@ import com.example.simpleintervaltimer.R
 import com.example.simpleintervaltimer.common.presentation.KeepScreenOn
 import com.example.simpleintervaltimer.timer.domain.models.TimeInterval
 import com.example.simpleintervaltimer.timer.domain.models.TimerSoundDefinition
+import com.example.simpleintervaltimer.timer.presentation.components.SimpleConfirmationDialog
 import com.example.simpleintervaltimer.ui.theme.Grey2
 import com.example.simpleintervaltimer.ui.theme.SimpleintervaltimerTheme
 
@@ -63,10 +63,17 @@ fun TimerScreen(
     BackHandler {
         timerViewModel.showCloseTimerDialog()
     }
-    CloseTimerDialog(
-        uiState.showCloseTimerDialog,
+    SimpleConfirmationDialog(
+        showDialog = uiState.showCloseTimerDialog,
+        title = "Close Timer",
+        text = "Are you sure you want to close the timer?",
+        confirmButtonText = "Close",
+        dismissButtonText = "Cancel",
+        onConfirm = {
+            timerViewModel.dismissCloseTimerDialog()
+            onCloseTimer()
+        },
         onDismissRequest = { timerViewModel.dismissCloseTimerDialog() },
-        onConfirmClose = { onCloseTimer() }
     )
     ConstraintLayout(modifier = Modifier.fillMaxSize()) {
         val (constRefIconButtonCloseTimer, constRefTextIntervalsLeft, constRefProgressTimer, constRefTextProgressState, constRefButtonPauseResume) = createRefs()
@@ -136,37 +143,6 @@ fun TimerScreen(
             onClickAction = timerViewModel::pauseOrResumeTimer
         )
     }
-}
-
-@Composable
-fun CloseTimerDialog(
-    showDialog: Boolean,
-    onDismissRequest: () -> Unit,
-    onConfirmClose: () -> Unit
-) {
-    if (!showDialog) return
-    AlertDialog(
-        title = { Text("Close Timer") },
-        text = { Text("Are you sure you want to close the timer?") },
-        onDismissRequest = { onDismissRequest() },
-        confirmButton = {
-            Button(
-                onClick = {
-                    onConfirmClose()
-                    onDismissRequest()
-                }
-            ) {
-                Text("Close")
-            }
-        },
-        dismissButton = {
-            Button(
-                onClick = { onDismissRequest() }
-            ) {
-                Text("Cancel")
-            }
-        }
-    )
 }
 
 @Composable
