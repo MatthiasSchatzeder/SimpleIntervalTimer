@@ -4,18 +4,26 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import com.example.simpleintervaltimer.timer.data.db.realm_objects.StoredTimeInterval
+import com.example.simpleintervaltimer.timer.data.repositories.StoredTimeIntervalRepository
 import com.example.simpleintervaltimer.timer.data.repositories.TimerSettingsRepository
 import com.example.simpleintervaltimer.timer.domain.models.TimeInterval
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
-class QuickStartViewModelFactory(private val timerSettingsRepository: TimerSettingsRepository) : ViewModelProvider.Factory {
+class QuickStartViewModelFactory(
+    private val timerSettingsRepository: TimerSettingsRepository,
+    private val storedTimeIntervalRepository: StoredTimeIntervalRepository = StoredTimeIntervalRepository()
+) : ViewModelProvider.Factory {
     @Suppress("UNCHECKED_CAST")
-    override fun <T : ViewModel> create(modelClass: Class<T>): T = QuickStartViewModel(timerSettingsRepository) as T
+    override fun <T : ViewModel> create(modelClass: Class<T>): T = QuickStartViewModel(timerSettingsRepository, storedTimeIntervalRepository) as T
 }
 
-class QuickStartViewModel(private val timerSettingsRepository: TimerSettingsRepository) : ViewModel() {
+class QuickStartViewModel(
+    private val timerSettingsRepository: TimerSettingsRepository,
+    private val storedTimeIntervalRepository: StoredTimeIntervalRepository
+) : ViewModel() {
     private val _uiState = MutableStateFlow(UiState())
     val uiState: StateFlow<UiState> = _uiState
 
@@ -34,6 +42,7 @@ class QuickStartViewModel(private val timerSettingsRepository: TimerSettingsRepo
 
     data class UiState(
         val isLoading: Boolean = false,
+        val showNameInput: Boolean = false,
         val intervalCount: String = "10",
         val workIntervalMinutes: String = "0",
         val workIntervalSeconds: String = "30",
@@ -109,6 +118,32 @@ class QuickStartViewModel(private val timerSettingsRepository: TimerSettingsRepo
         }
     }
 
+    fun showNameInput() {
+        _uiState.value = _uiState.value.copy(showNameInput = true)
+    }
+
+    fun dismissNameInput() {
+        _uiState.value = _uiState.value.copy(showNameInput = false)
+    }
+
+    fun saveInterval(intervalName: String) {
+        validateInput()
+        persistQuickStartTimeInterval()
+        val intervalName = if (intervalName.isBlank()) {
+            DEFAULT_TIME_INTERVAL_NAME
+        } else intervalName
+        val timeInterval = _uiState.value.getTimeInterval()
+        val storedTimeInterval = StoredTimeInterval().apply {
+            name = intervalName
+            workTime = timeInterval.workTime
+            restTime = timeInterval.restTime
+            intervals = timeInterval.intervals
+        }
+        viewModelScope.launch {
+            storedTimeIntervalRepository.addStoredTimeInterval(storedTimeInterval)
+        }
+    }
+
     fun startTimer(onStartTimer: (timeInterval: TimeInterval) -> Unit) {
         validateInput()
         persistQuickStartTimeInterval()
@@ -119,5 +154,9 @@ class QuickStartViewModel(private val timerSettingsRepository: TimerSettingsRepo
         viewModelScope.launch {
             timerSettingsRepository.updateQuickStartTimeInterval(_uiState.value.getTimeInterval())
         }
+    }
+
+    companion object {
+        const val DEFAULT_TIME_INTERVAL_NAME = "My Time Interval"
     }
 }
