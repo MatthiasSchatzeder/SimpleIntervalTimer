@@ -11,4 +11,8 @@ class StoredTimeIntervalRepository(
     suspend fun addStoredTimeInterval(storedTimeInterval: StoredTimeInterval) {
         storedTimeIntervalLocalDataSource.addStoredTimeInterval(storedTimeInterval)
     }
+
+    suspend fun deleteStoredTimeInterval(storedTimeInterval: StoredTimeInterval) {
+        storedTimeIntervalLocalDataSource.deleteStoredTimeInterval(storedTimeInterval)
+    }
 }

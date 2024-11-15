@@ -34,6 +34,17 @@ class IntervalListViewModel(
 
     data class UiState(
         val isLoading: Boolean = false,
-        val storedTimeIntervals: List<StoredTimeInterval> = emptyList()
+        val storedTimeIntervals: List<StoredTimeInterval> = emptyList(),
+        val storedTimeIntervalToDelete: StoredTimeInterval? = null
     )
+
+    fun setStoredTimeIntervalToDelete(storedTimeInterval: StoredTimeInterval?) {
+        _uiState.value = _uiState.value.copy(storedTimeIntervalToDelete = storedTimeInterval)
+    }
+
+    fun deleteStoredTimeInterval(storedTimeInterval: StoredTimeInterval) {
+        viewModelScope.launch {
+            storedTimeIntervalRepository.deleteStoredTimeInterval(storedTimeInterval)
+        }
+    }
 }

@@ -42,6 +42,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.simpleintervaltimer.timer.data.db.realm_objects.StoredTimeInterval
 import com.example.simpleintervaltimer.timer.domain.models.TimeInterval
+import com.example.simpleintervaltimer.timer.presentation.components.SimpleConfirmationDialog
 import com.example.simpleintervaltimer.ui.theme.SimpleintervaltimerTheme
 
 @Composable
@@ -66,6 +67,19 @@ fun IntervalListScreen(
             return
         }
     }
+    SimpleConfirmationDialog(
+        showDialog = uiState.storedTimeIntervalToDelete != null,
+        title = "Delete",
+        text = "Are you sure you want to delete the time interval \"${uiState.storedTimeIntervalToDelete?.name}\"?",
+        confirmButtonText = "Delete",
+        dismissButtonText = "Cancel",
+        onConfirm = {
+            uiState.storedTimeIntervalToDelete?.let {
+                intervalListViewModel.deleteStoredTimeInterval(it)
+            }
+        },
+        onDismissRequest = { intervalListViewModel.setStoredTimeIntervalToDelete(null) }
+    )
     LazyColumn(
         modifier = modifier.fillMaxSize(),
         verticalArrangement = Arrangement.spacedBy(16.dp),
@@ -76,9 +90,12 @@ fun IntervalListScreen(
             key = { it._id.hashCode() }
         ) { storedInterval ->
             StoredTimeIntervalCard(
-                modifier = modifier,
+                modifier = Modifier.animateItem(),
                 storedTimeInterval = storedInterval,
-                onStartTimer = onStartTimer
+                onStartTimer = onStartTimer,
+                onDeleteAction = {
+                    intervalListViewModel.setStoredTimeIntervalToDelete(storedInterval)
+                }
             )
         }
     }
@@ -88,7 +105,8 @@ fun IntervalListScreen(
 private fun StoredTimeIntervalCard(
     modifier: Modifier = Modifier,
     storedTimeInterval: StoredTimeInterval,
-    onStartTimer: (timeInterval: TimeInterval) -> Unit
+    onStartTimer: (timeInterval: TimeInterval) -> Unit,
+    onDeleteAction: () -> Unit
 ) {
     Card(modifier = modifier) {
         Column(modifier = Modifier.padding(16.dp)) {
@@ -117,7 +135,8 @@ private fun StoredTimeIntervalCard(
             Spacer(modifier = Modifier.height(16.dp))
             CardActionButtons(
                 timeInterval = timeInterval,
-                onStartTimer = onStartTimer
+                onStartTimer = onStartTimer,
+                onDeleteAction = onDeleteAction
             )
         }
     }
@@ -127,11 +146,12 @@ private fun StoredTimeIntervalCard(
 private fun CardActionButtons(
     modifier: Modifier = Modifier,
     timeInterval: TimeInterval,
-    onStartTimer: (TimeInterval) -> Unit
+    onStartTimer: (TimeInterval) -> Unit,
+    onDeleteAction: () -> Unit
 ) {
     Row(modifier = modifier) {
         IconButton(
-            onClick = { }
+            onClick = { onDeleteAction() }
         ) {
             Icon(
                 imageVector = Icons.Default.Delete,
@@ -206,7 +226,8 @@ fun StoredTimeIntervalCardPreview() {
         StoredTimeIntervalCard(
             modifier = Modifier.fillMaxWidth(),
             storedTimeInterval = storedTimeInterval,
-            onStartTimer = {}
+            onStartTimer = {},
+            onDeleteAction = {}
         )
     }
 }

@@ -23,4 +23,15 @@ class StoredTimeIntervalLocalDataSource(
             copyToRealm(storedTimeInterval)
         }
     }
+
+    suspend fun deleteStoredTimeInterval(storedTimeInterval: StoredTimeInterval) = withContext(dispatcher) {
+        realm.write {
+            val toDelete = query(
+                StoredTimeInterval::class,
+                "_id == $0",
+                storedTimeInterval._id
+            ).find().firstOrNull() ?: return@write
+            delete(toDelete)
+        }
+    }
 }
