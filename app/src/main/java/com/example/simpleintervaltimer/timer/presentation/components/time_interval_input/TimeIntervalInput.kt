@@ -24,6 +24,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.clearAndSetSemantics
@@ -40,6 +41,11 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.simpleintervaltimer.R
 import com.example.simpleintervaltimer.timer.domain.models.TimeInterval
 import com.example.simpleintervaltimer.ui.theme.SimpleintervaltimerTheme
+
+const val WORK_TIME_INPUT_TEST_TAG = "WORK_TIME_INPUT_TEST_TAG"
+const val REST_TIME_INPUT_TEST_TAG = "REST_TIME_INPUT_TEST_TAG"
+const val MINUTE_INPUT_TEST_TAG = "MINUTE_INPUT_TEST_TAG"
+const val SECOND_INPUT_TEST_TAG = "SECOND_INPUT_TEST_TAG"
 
 @Composable
 fun TimeIntervalInput(
@@ -70,6 +76,7 @@ fun TimeIntervalInput(
         )
         Spacer(Modifier.height(8.dp))
         MinuteSecondInput(
+            modifier = Modifier.testTag(WORK_TIME_INPUT_TEST_TAG),
             label = stringResource(R.string.work_time),
             minuteTextValue = uiState.workMinutes,
             secondTextValue = uiState.workSeconds,
@@ -84,6 +91,7 @@ fun TimeIntervalInput(
         )
         Spacer(Modifier.height(8.dp))
         MinuteSecondInput(
+            modifier = Modifier.testTag(REST_TIME_INPUT_TEST_TAG),
             label = stringResource(R.string.rest_time),
             minuteTextValue = uiState.restMinutes,
             secondTextValue = uiState.restSeconds,
@@ -192,6 +200,7 @@ private fun MinuteSecondInput(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 UpDownNumberSelector(
+                    modifier = Modifier.testTag(MINUTE_INPUT_TEST_TAG),
                     value = minuteTextValue,
                     upButtonContentDescription = stringResource(R.string.increase_minutes),
                     downButtonContentDescription = stringResource(R.string.decrease_minutes),
@@ -207,6 +216,7 @@ private fun MinuteSecondInput(
                     fontSize = 30.sp
                 )
                 UpDownNumberSelector(
+                    modifier = Modifier.testTag(SECOND_INPUT_TEST_TAG),
                     value = secondTextValue,
                     upButtonContentDescription = stringResource(R.string.increase_seconds),
                     downButtonContentDescription = stringResource(R.string.decrease_seconds),
