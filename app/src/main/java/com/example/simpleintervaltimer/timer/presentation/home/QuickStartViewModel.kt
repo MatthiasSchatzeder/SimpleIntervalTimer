@@ -58,6 +58,7 @@ class QuickStartViewModel(
     }
 
     fun saveInterval(intervalName: String) {
+        dismissNameInput()
         persistQuickStartTimeInterval()
         val intervalName = if (intervalName.isBlank()) {
             DEFAULT_TIME_INTERVAL_NAME
