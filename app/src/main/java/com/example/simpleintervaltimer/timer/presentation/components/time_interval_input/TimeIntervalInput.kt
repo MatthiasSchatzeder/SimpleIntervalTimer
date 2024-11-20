@@ -25,6 +25,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.KeyboardType
@@ -57,8 +58,10 @@ fun TimeIntervalInput(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         PlusMinusNumberSelector(
-            label = "Intervals",
+            label = stringResource(R.string.intervals),
             value = uiState.intervals,
+            plusButtonContentDescription = stringResource(R.string.increase_intervals),
+            minusButtonContentDescription = stringResource(R.string.decrease_intervals),
             onValueChanged = { viewModel.setIntervalCount(it) },
             onPlusButtonClick = { viewModel.increaseIntervalsByOne() },
             onMinusButtonClick = { viewModel.decreaseIntervalsByOne() },
@@ -67,7 +70,7 @@ fun TimeIntervalInput(
         )
         Spacer(Modifier.height(8.dp))
         MinuteSecondInput(
-            label = "Work Time",
+            label = stringResource(R.string.work_time),
             minuteTextValue = uiState.workMinutes,
             secondTextValue = uiState.workSeconds,
             onMinuteTextValueChange = { viewModel.setWorkIntervalMinutes(it) },
@@ -81,7 +84,7 @@ fun TimeIntervalInput(
         )
         Spacer(Modifier.height(8.dp))
         MinuteSecondInput(
-            label = "Rest Time",
+            label = stringResource(R.string.rest_time),
             minuteTextValue = uiState.restMinutes,
             secondTextValue = uiState.restSeconds,
             onMinuteTextValueChange = { viewModel.setRestIntervalMinutes(it) },
@@ -190,6 +193,8 @@ private fun MinuteSecondInput(
             ) {
                 UpDownNumberSelector(
                     value = minuteTextValue,
+                    upButtonContentDescription = stringResource(R.string.increase_minutes),
+                    downButtonContentDescription = stringResource(R.string.decrease_minutes),
                     onValueChanged = onMinuteTextValueChange,
                     onUpButtonClick = onMinuteUpButtonClick,
                     onDownButtonClick = onMinuteDownButtonClick,
@@ -197,11 +202,14 @@ private fun MinuteSecondInput(
                     onKeyboardActionDone = onKeyboardActionDone
                 )
                 Text(
+                    modifier = Modifier.clearAndSetSemantics { },
                     text = ":",
                     fontSize = 30.sp
                 )
                 UpDownNumberSelector(
                     value = secondTextValue,
+                    upButtonContentDescription = stringResource(R.string.increase_seconds),
+                    downButtonContentDescription = stringResource(R.string.decrease_seconds),
                     onValueChanged = onSecondTextValueChange,
                     onUpButtonClick = onSecondUpButtonClick,
                     onDownButtonClick = onSecondDownButtonClick,
