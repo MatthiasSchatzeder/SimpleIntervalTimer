@@ -47,6 +47,9 @@ const val REST_TIME_INPUT_TEST_TAG = "REST_TIME_INPUT_TEST_TAG"
 const val MINUTE_INPUT_TEST_TAG = "MINUTE_INPUT_TEST_TAG"
 const val SECOND_INPUT_TEST_TAG = "SECOND_INPUT_TEST_TAG"
 
+private val iconSize = 20.dp
+private const val iconAlpha = 0.2f
+
 @Composable
 fun TimeIntervalInput(
     modifier: Modifier = Modifier,
@@ -128,8 +131,6 @@ private fun PlusMinusNumberSelector(
             Row(
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                val iconSize = 20.dp
-                val iconAlpha = 0.2f
                 IconButton(onClick = { onMinusButtonClick() }) {
                     Icon(
                         modifier = Modifier
@@ -247,8 +248,6 @@ private fun UpDownNumberSelector(
         modifier = modifier,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        val iconSize = 20.dp
-        val iconAlpha = 0.2f
         IconButton(onClick = onUpButtonClick) {
             Icon(
                 modifier = Modifier
