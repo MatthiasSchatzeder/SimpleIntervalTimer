@@ -1,3 +1,12 @@
 <resources>
     <string name="app_name">simpleintervaltimer</string>
+    <string name="decrease_intervals">Decrease intervals</string>
+    <string name="increase_intervals">Increase intervals</string>
+    <string name="intervals">Intervals</string>
+    <string name="work_time">Work Time</string>
+    <string name="rest_time">Rest Time</string>
+    <string name="increase_minutes">Increase minutes</string>
+    <string name="decrease_minutes">Decrease minutes</string>
+    <string name="increase_seconds">Increase seconds</string>
+    <string name="decrease_seconds">Decrease seconds</string>
 </resources>

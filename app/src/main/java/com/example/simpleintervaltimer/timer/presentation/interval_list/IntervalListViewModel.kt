@@ -43,6 +43,7 @@ class IntervalListViewModel(
     }
 
     fun deleteStoredTimeInterval(storedTimeInterval: StoredTimeInterval) {
+        setStoredTimeIntervalToDelete(null)
         viewModelScope.launch {
             storedTimeIntervalRepository.deleteStoredTimeInterval(storedTimeInterval)
         }
