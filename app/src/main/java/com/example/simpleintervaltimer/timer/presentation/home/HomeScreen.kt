@@ -16,7 +16,6 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -35,7 +34,6 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.simpleintervaltimer.R
 import com.example.simpleintervaltimer.timer.data.data_sources.TimerSettingsLocalDataSource
 import com.example.simpleintervaltimer.timer.data.datastore.timerSettingsDataStore
-import com.example.simpleintervaltimer.timer.data.db.RealmProvider
 import com.example.simpleintervaltimer.timer.data.repositories.TimerSettingsRepository
 import com.example.simpleintervaltimer.timer.domain.models.TimeInterval
 import com.example.simpleintervaltimer.timer.presentation.components.time_interval_input.TimeIntervalInput
@@ -47,11 +45,6 @@ fun HomeScreen(
     modifier: Modifier = Modifier,
     onStartTimer: (timeInterval: TimeInterval) -> Unit
 ) {
-    DisposableEffect(Unit) {
-        onDispose {
-            RealmProvider.closeRealm()
-        }
-    }
     QuickStartTimer(
         modifier = modifier,
         onStartTimer = onStartTimer
