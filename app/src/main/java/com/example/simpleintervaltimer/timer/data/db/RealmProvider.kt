@@ -13,15 +13,9 @@ object RealmProvider {
 
     private var _realm: Realm? = null
 
-    fun getRealm(): Realm {
+    fun getRealm(): Realm = synchronized(this) {
         _realm?.let { return it }
-        _realm = Realm.open(config).also {
-            return it
-        }
-    }
-
-    fun closeRealm() {
-        _realm?.close()
-        _realm = null
+        _realm = Realm.open(config) // closing the realm instance should not be necessary for now
+        return _realm!!
     }
 }
