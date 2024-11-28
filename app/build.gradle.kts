@@ -53,7 +53,7 @@ android {
 
 val composeBomVersion = "2024.11.00"
 val lifecycleVersion = "2.8.7"
-val media3Version = "1.4.1"
+val media3Version = "1.5.0"
 
 dependencies {
     // UI
