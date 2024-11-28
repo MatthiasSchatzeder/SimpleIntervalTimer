@@ -28,9 +28,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.media3.exoplayer.ExoPlayer
 import com.example.simpleintervaltimer.R
 import com.example.simpleintervaltimer.common.presentation.KeepScreenOn
+import com.example.simpleintervaltimer.timer.di.ExoPlayerProvider
 import com.example.simpleintervaltimer.timer.domain.models.TimeInterval
 import com.example.simpleintervaltimer.timer.domain.models.TimerSoundDefinition
 import com.example.simpleintervaltimer.timer.presentation.components.SimpleConfirmationDialog
@@ -43,7 +43,7 @@ fun TimerScreen(
     timerViewModel: TimerViewModel = viewModel(
         factory = TimerViewModelFactory(
             timeInterval,
-            ExoPlayer.Builder(LocalContext.current).build(),
+            ExoPlayerProvider.getPlayer(LocalContext.current),
             TimerSoundDefinition.fromResourceIds(
                 R.raw.beep,
                 R.raw.end_interval_beep,
@@ -72,6 +72,7 @@ fun TimerScreen(
         onConfirm = {
             timerViewModel.dismissCloseTimerDialog()
             onCloseTimer()
+            ExoPlayerProvider.closePlayer()
         },
         onDismissRequest = { timerViewModel.dismissCloseTimerDialog() },
     )

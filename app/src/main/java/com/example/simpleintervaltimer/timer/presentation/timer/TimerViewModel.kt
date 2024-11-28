@@ -39,7 +39,6 @@ class TimerViewModel(
     override fun onCleared() {
         super.onCleared()
         timer.cancel()
-        player.release()
     }
 
     fun startTimer() {
