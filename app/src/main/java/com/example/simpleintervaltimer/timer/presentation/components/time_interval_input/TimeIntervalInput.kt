@@ -1,8 +1,10 @@
 package com.example.simpleintervaltimer.timer.presentation.components.time_interval_input
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -63,7 +65,7 @@ fun TimeIntervalInput(
     onTimeIntervalChanged(uiState.validate().toTimeInterval())
 
     Column(
-        modifier = modifier.width(400.dp),
+        modifier = modifier.width(200.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         PlusMinusNumberSelector(
@@ -127,9 +129,11 @@ private fun PlusMinusNumberSelector(
         modifier = modifier
     ) {
         Text(text = label)
-        OutlinedCard(modifier = Modifier.align(Alignment.CenterHorizontally)) {
+        OutlinedCard {
             Row(
-                verticalAlignment = Alignment.CenterVertically
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Center
             ) {
                 IconButton(onClick = { onMinusButtonClick() }) {
                     Icon(
@@ -196,9 +200,11 @@ private fun MinuteSecondInput(
         modifier = modifier
     ) {
         Text(text = label)
-        OutlinedCard(modifier = Modifier.align(Alignment.CenterHorizontally)) {
+        OutlinedCard {
             Row(
-                verticalAlignment = Alignment.CenterVertically
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Center
             ) {
                 UpDownNumberSelector(
                     modifier = Modifier.testTag(MINUTE_INPUT_TEST_TAG),
@@ -211,11 +217,13 @@ private fun MinuteSecondInput(
                     onFocusLeft = onFocusLeft,
                     onKeyboardActionDone = onKeyboardActionDone
                 )
+                Spacer(Modifier.width(8.dp))
                 Text(
                     modifier = Modifier.clearAndSetSemantics { },
                     text = ":",
                     fontSize = 30.sp
                 )
+                Spacer(Modifier.width(8.dp))
                 UpDownNumberSelector(
                     modifier = Modifier.testTag(SECOND_INPUT_TEST_TAG),
                     value = secondTextValue,
