@@ -31,6 +31,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
 import com.example.simpleintervaltimer.common.presentation.LockScreenOrientation
 import com.example.simpleintervaltimer.timer.domain.models.TimeInterval
+import com.example.simpleintervaltimer.timer.presentation.edit_interval.EditStoredTimeIntervalScreen
 import com.example.simpleintervaltimer.timer.presentation.home.HomeScreen
 import com.example.simpleintervaltimer.timer.presentation.interval_list.IntervalListScreen
 import com.example.simpleintervaltimer.timer.presentation.timer.TimerScreen
@@ -45,6 +46,9 @@ private object IntervalListRoute
 
 @Serializable
 private data class TimerRoute(val timeInterval: TimeInterval)
+
+@Serializable
+private data class EditStoredTimeIntervalRoute(val storedTimeIntervalIdHexString: String)
 
 @Composable
 fun App() {
@@ -72,6 +76,18 @@ fun App() {
                 IntervalListScreen(
                     onStartTimer = { timeInterval ->
                         navController.navigate(TimerRoute(timeInterval))
+                    },
+                    onEditTimeInterval = { storedTimeIntervalIdHexString ->
+                        navController.navigate(EditStoredTimeIntervalRoute(storedTimeIntervalIdHexString))
+                    }
+                )
+            }
+
+            composable<EditStoredTimeIntervalRoute> {
+                EditStoredTimeIntervalScreen(
+                    storedTimeIntervalIdHexString = it.toRoute<EditStoredTimeIntervalRoute>().storedTimeIntervalIdHexString,
+                    onEditFinished = {
+                        navController.popBackStack()
                     }
                 )
             }

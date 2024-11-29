@@ -9,4 +9,9 @@
     <string name="decrease_minutes">Decrease minutes</string>
     <string name="increase_seconds">Increase seconds</string>
     <string name="decrease_seconds">Decrease seconds</string>
+    <string name="save">Save</string>
+    <string name="cancel">Cancel</string>
+    <string name="discard">Discard</string>
+    <string name="discard_changes_message">Are you sure you want to discard the changes?</string>
+    <string name="discard_changes_title">Discard Changes</string>
 </resources>

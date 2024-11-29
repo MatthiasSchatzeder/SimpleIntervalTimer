@@ -51,7 +51,8 @@ fun IntervalListScreen(
     intervalListViewModel: IntervalListViewModel = viewModel(
         factory = IntervalListViewModelFactory()
     ),
-    onStartTimer: (timeInterval: TimeInterval) -> Unit
+    onStartTimer: (timeInterval: TimeInterval) -> Unit,
+    onEditTimeInterval: (storedTimeIntervalIdHexString: String) -> Unit
 ) {
     val uiState by intervalListViewModel.uiState.collectAsStateWithLifecycle()
     Box(
@@ -93,9 +94,8 @@ fun IntervalListScreen(
                 modifier = Modifier.animateItem(),
                 storedTimeInterval = storedInterval,
                 onStartTimer = onStartTimer,
-                onDeleteAction = {
-                    intervalListViewModel.setStoredTimeIntervalToDelete(storedInterval)
-                }
+                onDeleteAction = { intervalListViewModel.setStoredTimeIntervalToDelete(storedInterval) },
+                onEditAction = { onEditTimeInterval(storedInterval._id.toHexString()) }
             )
         }
     }
@@ -106,7 +106,8 @@ private fun StoredTimeIntervalCard(
     modifier: Modifier = Modifier,
     storedTimeInterval: StoredTimeInterval,
     onStartTimer: (timeInterval: TimeInterval) -> Unit,
-    onDeleteAction: () -> Unit
+    onDeleteAction: () -> Unit,
+    onEditAction: () -> Unit
 ) {
     Card(modifier = modifier) {
         Column(modifier = Modifier.padding(16.dp)) {
@@ -136,7 +137,8 @@ private fun StoredTimeIntervalCard(
             CardActionButtons(
                 timeInterval = timeInterval,
                 onStartTimer = onStartTimer,
-                onDeleteAction = onDeleteAction
+                onDeleteAction = onDeleteAction,
+                onEditAction = onEditAction
             )
         }
     }
@@ -147,11 +149,12 @@ private fun CardActionButtons(
     modifier: Modifier = Modifier,
     timeInterval: TimeInterval,
     onStartTimer: (TimeInterval) -> Unit,
-    onDeleteAction: () -> Unit
+    onDeleteAction: () -> Unit,
+    onEditAction: () -> Unit
 ) {
     Row(modifier = modifier) {
         IconButton(
-            onClick = { onDeleteAction() }
+            onClick = onDeleteAction
         ) {
             Icon(
                 imageVector = Icons.Default.Delete,
@@ -160,7 +163,7 @@ private fun CardActionButtons(
         }
         Spacer(modifier = Modifier.width(8.dp))
         IconButton(
-            onClick = { }
+            onClick = onEditAction
         ) {
             Icon(
                 imageVector = Icons.Default.Edit,
@@ -227,7 +230,8 @@ fun StoredTimeIntervalCardPreview() {
             modifier = Modifier.fillMaxWidth(),
             storedTimeInterval = storedTimeInterval,
             onStartTimer = {},
-            onDeleteAction = {}
+            onDeleteAction = {},
+            onEditAction = {}
         )
     }
 }
