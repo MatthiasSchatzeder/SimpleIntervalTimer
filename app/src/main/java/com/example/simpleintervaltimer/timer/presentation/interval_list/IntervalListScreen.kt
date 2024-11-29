@@ -31,6 +31,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
@@ -40,6 +41,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.simpleintervaltimer.R
 import com.example.simpleintervaltimer.timer.data.db.realm_objects.StoredTimeInterval
 import com.example.simpleintervaltimer.timer.domain.models.TimeInterval
 import com.example.simpleintervaltimer.timer.presentation.components.SimpleConfirmationDialog
@@ -70,10 +72,13 @@ fun IntervalListScreen(
     }
     SimpleConfirmationDialog(
         showDialog = uiState.storedTimeIntervalToDelete != null,
-        title = "Delete",
-        text = "Are you sure you want to delete the time interval \"${uiState.storedTimeIntervalToDelete?.name}\"?",
-        confirmButtonText = "Delete",
-        dismissButtonText = "Cancel",
+        title = stringResource(R.string.delete),
+        text = stringResource(
+            R.string.delete_interval_message_with_placeholder,
+            uiState.storedTimeIntervalToDelete?.name ?: stringResource(R.string.null_string)
+        ),
+        confirmButtonText = stringResource(R.string.delete),
+        dismissButtonText = stringResource(R.string.cancel),
         onConfirm = {
             uiState.storedTimeIntervalToDelete?.let {
                 intervalListViewModel.deleteStoredTimeInterval(it)
@@ -120,17 +125,17 @@ private fun StoredTimeIntervalCard(
             Spacer(modifier = Modifier.height(16.dp))
             val timeInterval = TimeInterval(storedTimeInterval.workTime, storedTimeInterval.restTime, storedTimeInterval.intervals)
             HorizontalNameValuePair(
-                name = "Intervals",
+                name = stringResource(R.string.intervals),
                 value = timeInterval.intervals.toString()
             )
             HorizontalDivider()
             HorizontalNameValuePair(
-                name = "Work Time",
+                name = stringResource(R.string.work_time),
                 value = timeInterval.getDisplayWorkTime()
             )
             HorizontalDivider()
             HorizontalNameValuePair(
-                name = "Rest Time",
+                name = stringResource(R.string.rest_time),
                 value = timeInterval.getDisplayRestTime()
             )
             Spacer(modifier = Modifier.height(16.dp))
@@ -183,7 +188,7 @@ private fun CardActionButtons(
                 contentDescription = null
             )
             Spacer(modifier = Modifier.size(ButtonDefaults.IconSpacing))
-            Text(text = "Start")
+            Text(text = stringResource(R.string.start))
         }
     }
 }

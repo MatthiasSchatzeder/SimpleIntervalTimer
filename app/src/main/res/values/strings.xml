@@ -14,4 +14,25 @@
     <string name="discard">Discard</string>
     <string name="discard_changes_message">Are you sure you want to discard the changes?</string>
     <string name="discard_changes_title">Discard Changes</string>
+    <string name="start">Start</string>
+    <string name="start_timer">Start Timer</string>
+    <string name="confirm">Confirm</string>
+    <string name="dismiss">Dismiss</string>
+    <string name="name">Name</string>
+    <string name="enter_name">Enter Name</string>
+    <string name="home">Home</string>
+    <string name="my_intervals">My Intervals</string>
+    <string name="end">End</string>
+    <string name="end_timer">End Timer</string>
+    <string name="end_timer_message">Are you sure you want to end the timer?</string>
+    <string name="delete">Delete</string>
+    <string name="delete_interval_message_with_placeholder">Are you sure you want to delete the time interval \"%1$s\"?</string>
+    <string name="prepare">Prepare</string>
+    <string name="work">Work</string>
+    <string name="rest">Rest</string>
+    <string name="done">Done</string>
+    <string name="stop">Stop</string>
+    <string name="resume">Resume</string>
+    <string name="last_interval">Last Interval</string>
+    <string name="null_string">null</string>
 </resources>

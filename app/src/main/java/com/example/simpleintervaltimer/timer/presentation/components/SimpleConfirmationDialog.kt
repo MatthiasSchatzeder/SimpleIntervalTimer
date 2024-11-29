@@ -5,7 +5,9 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import com.example.simpleintervaltimer.R
 import com.example.simpleintervaltimer.ui.theme.SimpleintervaltimerTheme
 
 @Composable
@@ -51,8 +53,8 @@ fun SimpleConfirmationDialogPreview() {
         SimpleConfirmationDialog(
             showDialog = true,
             title = "Title: this is some long title of this button that is very long",
-            confirmButtonText = "Confirm",
-            dismissButtonText = "Dismiss",
+            confirmButtonText = stringResource(R.string.confirm),
+            dismissButtonText = stringResource(R.string.dismiss),
             onConfirm = {},
             onDismissRequest = {}
         )
