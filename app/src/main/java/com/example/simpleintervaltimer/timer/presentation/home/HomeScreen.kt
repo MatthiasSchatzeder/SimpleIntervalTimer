@@ -24,6 +24,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -99,7 +100,7 @@ fun QuickStartTimer(
                 contentDescription = null
             )
             Spacer(modifier = Modifier.size(ButtonDefaults.IconSpacing))
-            Text(text = "Save")
+            Text(text = stringResource(R.string.save))
         }
         Spacer(modifier = Modifier.height(8.dp))
         Button(
@@ -109,7 +110,7 @@ fun QuickStartTimer(
             }
         ) {
             Text(
-                text = "Start Timer",
+                text = stringResource(R.string.start_timer),
                 style = TextStyle(
                     fontSize = 50.sp
                 ),
@@ -131,26 +132,26 @@ fun InputTextDialog(
     AlertDialog(
         modifier = modifier,
         onDismissRequest = { onDismissRequest() },
-        title = { Text("Enter Name") },
+        title = { Text(stringResource(R.string.enter_name)) },
         text = {
             OutlinedTextField(
                 value = text,
                 onValueChange = { text = it },
-                label = { Text("Name") }
+                label = { Text(text = stringResource(R.string.name)) }
             )
         },
         confirmButton = {
             Button(
                 onClick = { onConfirm(text) }
             ) {
-                Text("Confirm")
+                Text(text = stringResource(R.string.confirm))
             }
         },
         dismissButton = {
             Button(
                 onClick = { onDismissRequest() }
             ) {
-                Text("Dismiss")
+                Text(text = stringResource(R.string.dismiss))
             }
         }
     )

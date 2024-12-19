@@ -16,6 +16,20 @@ data class TimeInterval(val workTime: Long, val restTime: Long, val intervals: I
 
     fun getDisplayRestTime() = "%02d:%02d".format(restTime.getDisplayMinutes(), restTime.getDisplaySeconds())
 
+    override fun equals(other: Any?): Boolean {
+        if (other !is TimeInterval) return false
+        if (this === other) return true
+        return this.workTime == other.workTime && this.restTime == other.restTime && this.intervals == other.intervals
+    }
+
+    override fun hashCode(): Int {
+        var hashCode = super.hashCode()
+        hashCode += workTime.hashCode()
+        hashCode += restTime.hashCode()
+        hashCode += intervals.hashCode()
+        return hashCode
+    }
+
     /**
      * Custom NavType for TimeInterval used for serializing and deserializing TimeInterval objects
      */

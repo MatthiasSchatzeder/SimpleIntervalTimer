@@ -1,5 +1,6 @@
 package com.example.simpleintervaltimer.timer.presentation.timer
 
+import android.content.Context
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -20,6 +21,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -34,6 +36,7 @@ import com.example.simpleintervaltimer.timer.di.ExoPlayerProvider
 import com.example.simpleintervaltimer.timer.domain.models.TimeInterval
 import com.example.simpleintervaltimer.timer.domain.models.TimerSoundDefinition
 import com.example.simpleintervaltimer.timer.presentation.components.SimpleConfirmationDialog
+import com.example.simpleintervaltimer.timer.presentation.timer.TimerViewModel.IntervalState.*
 import com.example.simpleintervaltimer.ui.theme.Grey2
 import com.example.simpleintervaltimer.ui.theme.SimpleintervaltimerTheme
 
@@ -65,10 +68,10 @@ fun TimerScreen(
     }
     SimpleConfirmationDialog(
         showDialog = uiState.showCloseTimerDialog,
-        title = "Close Timer",
-        text = "Are you sure you want to close the timer?",
-        confirmButtonText = "Close",
-        dismissButtonText = "Cancel",
+        title = stringResource(R.string.end_timer),
+        text = stringResource(R.string.end_timer_message),
+        confirmButtonText = stringResource(R.string.end),
+        dismissButtonText = stringResource(R.string.cancel),
         onConfirm = {
             timerViewModel.dismissCloseTimerDialog()
             onCloseTimer()
@@ -99,7 +102,7 @@ fun TimerScreen(
                     bottom.linkTo(constRefProgressTimer.top, margin = 20.dp)
                 }
                 .fillMaxWidth(),
-            text = uiState.getRemainingIntervalsText(),
+            text = uiState.getRemainingIntervalsText(LocalContext.current),
             style = TextStyle(
                 fontSize = 40.sp, color = Color.White, fontWeight = FontWeight.Normal
             ),
@@ -123,7 +126,7 @@ fun TimerScreen(
                     top.linkTo(constRefProgressTimer.bottom, margin = 20.dp)
                 }
                 .fillMaxWidth(),
-            text = uiState.intervalState.toStateString(),
+            text = uiState.intervalState.getStateString(LocalContext.current),
             style = TextStyle(
                 fontSize = 70.sp,
                 color = Color.White,
@@ -140,10 +143,34 @@ fun TimerScreen(
                 .fillMaxWidth()
                 .padding(all = 20.dp),
             visible = uiState.isPauseResumeButtonVisible(),
-            buttonText = uiState.getResumeStopButtonText(),
+            buttonText = getPauseResumeButtonText(uiState.isTimerRunning, LocalContext.current),
             onClickAction = timerViewModel::pauseOrResumeTimer
         )
     }
+}
+
+private fun TimerViewModel.TimerUiState.getRemainingIntervalsText(context: Context): String {
+    if (remainingIntervals == 1) return context.getString(R.string.last_interval)
+    if (remainingIntervals <= 0) return ""
+    return remainingIntervals.toString()
+}
+
+private fun TimerViewModel.IntervalState.getStateString(context: Context): String = when (this) {
+    INIT -> context.getString(R.string.prepare)
+    WORK -> context.getString(R.string.work)
+    REST -> context.getString(R.string.rest)
+    DONE -> context.getString(R.string.done)
+}
+
+private fun TimerViewModel.IntervalState.toStateColor() = when (this) {
+    INIT -> Color.Yellow
+    WORK -> Color.Green
+    REST -> Color.Blue
+    DONE -> Color.Cyan
+}
+
+private fun getPauseResumeButtonText(isTimerRunning: Boolean, context: Context): String {
+    return if (isTimerRunning) context.getString(R.string.stop) else context.getString(R.string.resume)
 }
 
 @Composable

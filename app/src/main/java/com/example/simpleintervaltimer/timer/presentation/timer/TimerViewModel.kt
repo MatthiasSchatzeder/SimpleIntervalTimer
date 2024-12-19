@@ -1,7 +1,6 @@
 package com.example.simpleintervaltimer.timer.presentation.timer
 
 import android.os.CountDownTimer
-import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.media3.common.MediaItem
@@ -156,20 +155,6 @@ class TimerViewModel(
 
     enum class IntervalState {
         INIT, WORK, REST, DONE;
-
-        fun toStateString(): String = when (this) {
-            INIT -> "Prepare"
-            WORK -> "Work"
-            REST -> "Rest"
-            DONE -> "Done"
-        }
-
-        fun toStateColor() = when (this) {
-            INIT -> Color.Yellow
-            WORK -> Color.Green
-            REST -> Color.Blue
-            DONE -> Color.Cyan
-        }
     }
 
     data class TimerUiState(
@@ -181,7 +166,7 @@ class TimerViewModel(
         val showCloseTimerDialog: Boolean = false,
     ) {
         fun getRemainingTimeFormatted(): String {
-            if (intervalState == DONE) return "Done"
+            if (intervalState == DONE) return ""
             val millis = remainingTime.getDisplayMillis()
             val seconds = remainingTime.getDisplaySeconds()
             val minutes = remainingTime.getDisplayMinutes()
@@ -192,21 +177,11 @@ class TimerViewModel(
             }
         }
 
-        fun getResumeStopButtonText(): String {
-            return if (isTimerRunning) "Stop" else "Resume"
-        }
-
         fun isPauseResumeButtonVisible(): Boolean {
             return when (intervalState) {
                 INIT, WORK, REST -> true
                 DONE -> false
             }
-        }
-
-        fun getRemainingIntervalsText(): String {
-            if (remainingIntervals == 1) return "Last Interval"
-            if (remainingIntervals <= 0) return ""
-            return remainingIntervals.toString()
         }
     }
 }

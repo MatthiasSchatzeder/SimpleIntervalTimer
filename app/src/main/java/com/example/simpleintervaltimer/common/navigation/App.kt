@@ -1,6 +1,7 @@
 package com.example.simpleintervaltimer.common.navigation
 
 import android.content.pm.ActivityInfo
+import androidx.annotation.StringRes
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
@@ -19,6 +20,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavDestination
 import androidx.navigation.NavDestination.Companion.hasRoute
 import androidx.navigation.NavDestination.Companion.hierarchy
@@ -29,8 +31,10 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
+import com.example.simpleintervaltimer.R
 import com.example.simpleintervaltimer.common.presentation.LockScreenOrientation
 import com.example.simpleintervaltimer.timer.domain.models.TimeInterval
+import com.example.simpleintervaltimer.timer.presentation.edit_interval.EditStoredTimeIntervalScreen
 import com.example.simpleintervaltimer.timer.presentation.home.HomeScreen
 import com.example.simpleintervaltimer.timer.presentation.interval_list.IntervalListScreen
 import com.example.simpleintervaltimer.timer.presentation.timer.TimerScreen
@@ -45,6 +49,9 @@ private object IntervalListRoute
 
 @Serializable
 private data class TimerRoute(val timeInterval: TimeInterval)
+
+@Serializable
+private data class EditStoredTimeIntervalRoute(val storedTimeIntervalIdHexString: String)
 
 @Composable
 fun App() {
@@ -72,6 +79,18 @@ fun App() {
                 IntervalListScreen(
                     onStartTimer = { timeInterval ->
                         navController.navigate(TimerRoute(timeInterval))
+                    },
+                    onEditTimeInterval = { storedTimeIntervalIdHexString ->
+                        navController.navigate(EditStoredTimeIntervalRoute(storedTimeIntervalIdHexString))
+                    }
+                )
+            }
+
+            composable<EditStoredTimeIntervalRoute> {
+                EditStoredTimeIntervalScreen(
+                    storedTimeIntervalIdHexString = it.toRoute<EditStoredTimeIntervalRoute>().storedTimeIntervalIdHexString,
+                    onEditFinished = {
+                        navController.popBackStack()
                     }
                 )
             }
@@ -91,11 +110,11 @@ fun App() {
     }
 }
 
-private data class TopLevelRoute<T : Any>(val name: String, val route: T, val icon: ImageVector)
+private data class TopLevelRoute<T : Any>(@StringRes val nameRes: Int, val route: T, val icon: ImageVector)
 
 private val topLevelRoutes = listOf(
-    TopLevelRoute("Home", HomeRoute, Icons.Filled.Home),
-    TopLevelRoute("My Intervals", IntervalListRoute, Icons.AutoMirrored.Filled.List)
+    TopLevelRoute(R.string.home, HomeRoute, Icons.Filled.Home),
+    TopLevelRoute(R.string.my_intervals, IntervalListRoute, Icons.AutoMirrored.Filled.List)
 )
 
 @Composable
@@ -110,8 +129,8 @@ private fun BottomNavBar(navController: NavHostController) {
         NavigationBar {
             topLevelRoutes.forEach { topLevelRoute ->
                 NavigationBarItem(
-                    label = { Text(topLevelRoute.name) },
-                    icon = { Icon(topLevelRoute.icon, topLevelRoute.name) },
+                    label = { Text(stringResource(topLevelRoute.nameRes)) },
+                    icon = { Icon(topLevelRoute.icon, stringResource(topLevelRoute.nameRes)) },
                     selected = currentDestination?.hierarchy?.any { it.hasRoute(topLevelRoute.route::class) } == true,
                     onClick = {
                         navController.navigate(topLevelRoute.route) {
