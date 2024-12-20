@@ -65,7 +65,7 @@ fun TimerScreen(
         timerViewModel.startTimer()
     }
     BackHandler {
-        timerViewModel.showCloseTimerDialog()
+        timerViewModel.requestEndTimer(onEndTimer = onEndTimer)
     }
     SimpleConfirmationDialog(
         showDialog = uiState.showCloseTimerDialog,
@@ -73,12 +73,8 @@ fun TimerScreen(
         text = stringResource(R.string.end_timer_message),
         confirmButtonText = stringResource(R.string.end),
         dismissButtonText = stringResource(R.string.cancel),
-        onConfirm = {
-            timerViewModel.dismissCloseTimerDialog()
-            onEndTimer()
-            ExoPlayerProvider.closePlayer()
-        },
-        onDismissRequest = { timerViewModel.dismissCloseTimerDialog() },
+        onConfirm = { timerViewModel.requestEndTimer(forceEnd = true, onEndTimer = onEndTimer) },
+        onDismissRequest = { timerViewModel.dismissCloseTimerDialog() }
     )
     ConstraintLayout(modifier = Modifier.fillMaxSize()) {
         val (constRefIconButtonCloseTimer, constRefTextIntervalsLeft, constRefProgressTimer, constRefTextProgressState, constRefButtonPauseResume) = createRefs()
@@ -88,7 +84,7 @@ fun TimerScreen(
                     start.linkTo(parent.start, margin = 8.dp)
                     top.linkTo(parent.top, margin = 8.dp)
                 },
-            onClick = { timerViewModel.showCloseTimerDialog() },
+            onClick = { timerViewModel.requestEndTimer(onEndTimer = onEndTimer) },
             content = {
                 Icon(
                     modifier = Modifier.size(48.dp),

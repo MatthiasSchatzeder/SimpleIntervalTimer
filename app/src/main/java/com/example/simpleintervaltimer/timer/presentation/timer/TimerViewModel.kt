@@ -8,6 +8,7 @@ import androidx.media3.exoplayer.ExoPlayer
 import com.example.simpleintervaltimer.common.helper.getDisplayMillis
 import com.example.simpleintervaltimer.common.helper.getDisplayMinutes
 import com.example.simpleintervaltimer.common.helper.getDisplaySeconds
+import com.example.simpleintervaltimer.timer.di.ExoPlayerProvider
 import com.example.simpleintervaltimer.timer.domain.models.TimeInterval
 import com.example.simpleintervaltimer.timer.domain.models.TimerSoundDefinition
 import com.example.simpleintervaltimer.timer.presentation.timer.TimerViewModel.IntervalState.*
@@ -131,8 +132,14 @@ class TimerViewModel(
         }
     }
 
-    fun showCloseTimerDialog() {
-        _uiState.value = _uiState.value.copy(showCloseTimerDialog = true)
+    fun requestEndTimer(forceEnd: Boolean = false, onEndTimer: () -> Unit) {
+        if (forceEnd || _uiState.value.intervalState == DONE) {
+            dismissCloseTimerDialog()
+            onEndTimer()
+            ExoPlayerProvider.closePlayer()
+        } else {
+            _uiState.value = _uiState.value.copy(showCloseTimerDialog = true)
+        }
     }
 
     fun dismissCloseTimerDialog() {
@@ -146,13 +153,6 @@ class TimerViewModel(
         player.play()
     }
 
-    companion object {
-        private const val DEFAULT_PREPARE_TIME: Long = 5_000L
-        private const val DEFAULT_TICK_TIME: Long = 10L
-        private const val INITIAL_SOUND_TRIGGER_SECOND: Int = 3
-        private const val SOUND_TRIGGER_MILLIS_THRESHOLD: Long = 100L
-    }
-
     enum class IntervalState {
         INIT, WORK, REST, DONE;
     }
@@ -163,7 +163,7 @@ class TimerViewModel(
         val remainingIntervals: Int = 0,
         val intervalState: IntervalState = INIT,
         val isTimerRunning: Boolean = false,
-        val showCloseTimerDialog: Boolean = false,
+        val showCloseTimerDialog: Boolean = false
     ) {
         fun getRemainingTimeFormatted(): String {
             if (intervalState == DONE) return ""
@@ -183,5 +183,12 @@ class TimerViewModel(
                 DONE -> false
             }
         }
+    }
+
+    companion object {
+        private const val DEFAULT_PREPARE_TIME: Long = 5_000L
+        private const val DEFAULT_TICK_TIME: Long = 10L
+        private const val INITIAL_SOUND_TRIGGER_SECOND: Int = 3
+        private const val SOUND_TRIGGER_MILLIS_THRESHOLD: Long = 100L
     }
 }
