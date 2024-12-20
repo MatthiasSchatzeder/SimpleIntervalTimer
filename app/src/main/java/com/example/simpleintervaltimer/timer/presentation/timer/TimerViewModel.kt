@@ -33,7 +33,7 @@ class TimerViewModel(
     private lateinit var timer: CountDownTimer
     private var soundTriggerSecond: Int = INITIAL_SOUND_TRIGGER_SECOND
 
-    private val _uiState: MutableStateFlow<TimerUiState> = MutableStateFlow(TimerUiState())
+    private val _uiState: MutableStateFlow<TimerUiState> = MutableStateFlow(TimerUiState(remainingIntervals = timeInterval.intervals))
     val uiState: StateFlow<TimerUiState> = _uiState.asStateFlow()
 
     override fun onCleared() {
@@ -41,11 +41,7 @@ class TimerViewModel(
         timer.cancel()
     }
 
-    fun startTimer() {
-        _uiState.value = _uiState.value.copy(
-            remainingTime = DEFAULT_PREPARE_TIME,
-            remainingIntervals = timeInterval.intervals
-        )
+    init {
         startTimer(DEFAULT_PREPARE_TIME)
     }
 

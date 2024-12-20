@@ -15,7 +15,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -61,9 +60,6 @@ fun TimerScreen(
 ) {
     val uiState by timerViewModel.uiState.collectAsState()
     KeepScreenOn()
-    LaunchedEffect(key1 = true) {
-        timerViewModel.startTimer()
-    }
     BackHandler {
         timerViewModel.requestEndTimer(onEndTimer = onEndTimer)
     }
