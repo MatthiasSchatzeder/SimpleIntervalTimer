@@ -56,7 +56,7 @@ fun TimerScreen(
             )
         )
     ),
-    onCloseTimer: () -> Unit
+    onEndTimer: () -> Unit
 ) {
     val uiState = timerViewModel.uiState.collectAsState().value
     KeepScreenOn()
@@ -74,7 +74,7 @@ fun TimerScreen(
         dismissButtonText = stringResource(R.string.cancel),
         onConfirm = {
             timerViewModel.dismissCloseTimerDialog()
-            onCloseTimer()
+            onEndTimer()
             ExoPlayerProvider.closePlayer()
         },
         onDismissRequest = { timerViewModel.dismissCloseTimerDialog() },
@@ -223,7 +223,7 @@ fun TimerPreview() {
     SimpleintervaltimerTheme {
         TimerScreen(
             TimeInterval(5_000, 2_000, 10),
-            onCloseTimer = {}
+            onEndTimer = {}
         )
     }
 }
