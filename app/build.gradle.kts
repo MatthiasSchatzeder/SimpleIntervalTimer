@@ -51,9 +51,9 @@ android {
     }
 }
 
-val composeBomVersion = "2024.11.00"
+val composeBomVersion = "2024.12.01"
 val lifecycleVersion = "2.8.7"
-val media3Version = "1.5.0"
+val media3Version = "1.5.1"
 
 dependencies {
     // UI
@@ -64,7 +64,7 @@ dependencies {
     implementation("androidx.compose.ui:ui-tooling-preview")
     implementation("androidx.compose.material3:material3")
     implementation("androidx.constraintlayout:constraintlayout-compose:1.1.0")
-    implementation("androidx.navigation:navigation-compose:2.8.4")
+    implementation("androidx.navigation:navigation-compose:2.8.5")
     implementation("androidx.activity:activity-compose:1.9.3")
 
     // Data
