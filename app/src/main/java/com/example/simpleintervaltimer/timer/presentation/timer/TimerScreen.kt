@@ -17,6 +17,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -58,7 +59,7 @@ fun TimerScreen(
     ),
     onEndTimer: () -> Unit
 ) {
-    val uiState = timerViewModel.uiState.collectAsState().value
+    val uiState by timerViewModel.uiState.collectAsState()
     KeepScreenOn()
     LaunchedEffect(key1 = true) {
         timerViewModel.startTimer()
