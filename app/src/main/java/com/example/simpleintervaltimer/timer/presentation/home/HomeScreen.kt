@@ -38,7 +38,7 @@ import com.example.simpleintervaltimer.timer.data.datastore.timerSettingsDataSto
 import com.example.simpleintervaltimer.timer.data.repositories.TimerSettingsRepository
 import com.example.simpleintervaltimer.timer.domain.models.TimeInterval
 import com.example.simpleintervaltimer.timer.presentation.components.time_interval_input.TimeIntervalInput
-import com.example.simpleintervaltimer.ui.theme.SimpleintervaltimerTheme
+import com.example.simpleintervaltimer.ui.theme.SimpleIntervalTimerTheme
 import kotlinx.coroutines.Dispatchers
 
 @Composable
@@ -160,7 +160,7 @@ fun InputTextDialog(
 @Preview(showBackground = true)
 @Composable
 private fun HomeScreenPreview() {
-    SimpleintervaltimerTheme {
+    SimpleIntervalTimerTheme {
         HomeScreen(onStartTimer = {})
     }
 }

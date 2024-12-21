@@ -8,7 +8,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.simpleintervaltimer.R
-import com.example.simpleintervaltimer.ui.theme.SimpleintervaltimerTheme
+import com.example.simpleintervaltimer.ui.theme.SimpleIntervalTimerTheme
 
 @Composable
 fun SimpleConfirmationDialog(
@@ -49,7 +49,7 @@ fun SimpleConfirmationDialog(
 @Preview(showBackground = true)
 @Composable
 fun SimpleConfirmationDialogPreview() {
-    SimpleintervaltimerTheme {
+    SimpleIntervalTimerTheme {
         SimpleConfirmationDialog(
             showDialog = true,
             title = "Title: this is some long title of this button that is very long",

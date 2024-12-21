@@ -39,7 +39,7 @@ onSurface = Color(0xFF1C1B1F),
 
 // ToDo: use Color Themes
 @Composable
-fun SimpleintervaltimerTheme(
+fun SimpleIntervalTimerTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
     // Dynamic color is available on Android 12+
     dynamicColor: Boolean = true,

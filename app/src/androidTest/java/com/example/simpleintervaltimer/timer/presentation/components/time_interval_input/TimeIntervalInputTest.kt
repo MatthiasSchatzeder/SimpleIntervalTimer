@@ -18,7 +18,7 @@ import androidx.compose.ui.test.performTextReplacement
 import androidx.test.platform.app.InstrumentationRegistry
 import com.example.simpleintervaltimer.R
 import com.example.simpleintervaltimer.timer.domain.models.TimeInterval
-import com.example.simpleintervaltimer.ui.theme.SimpleintervaltimerTheme
+import com.example.simpleintervaltimer.ui.theme.SimpleIntervalTimerTheme
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -33,7 +33,7 @@ class TimeIntervalInputTest {
     fun setUp() {
         // start the composable for every test
         rule.setContent {
-            SimpleintervaltimerTheme {
+            SimpleIntervalTimerTheme {
                 Box(
                     modifier = Modifier.fillMaxSize(),
                     contentAlignment = Alignment.Center
