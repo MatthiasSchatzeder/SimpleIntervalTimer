@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">simpleintervaltimer</string>
+    <string name="app_name">Simple Interval Timer</string>
     <string name="decrease_intervals">Decrease intervals</string>
     <string name="increase_intervals">Increase intervals</string>
     <string name="intervals">Intervals</string>
