@@ -103,7 +103,7 @@ fun App() {
                 val timerRoute = it.toRoute<TimerRoute>()
                 TimerScreen(
                     timeInterval = timerRoute.timeInterval,
-                    onCloseTimer = { navController.popBackStack() }
+                    onEndTimer = { navController.popBackStack() }
                 )
             }
         }
