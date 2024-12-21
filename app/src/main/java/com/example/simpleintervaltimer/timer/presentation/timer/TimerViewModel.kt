@@ -172,13 +172,6 @@ class TimerViewModel(
                 "%d:%d,%d".format(minutes, seconds, millis / 100)
             }
         }
-
-        fun isPauseResumeButtonVisible(): Boolean {
-            return when (intervalState) {
-                INIT, WORK, REST -> true
-                DONE -> false
-            }
-        }
     }
 
     companion object {

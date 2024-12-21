@@ -21,6 +21,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -75,12 +76,13 @@ fun TimerScreen(
     )
     Timer(
         remainingIntervals = uiState.getRemainingIntervalsText(LocalContext.current),
+        showDoneMessage = uiState.intervalState == DONE,
         percentageDone = uiState.percentageDone,
         stateColor = uiState.intervalState.toStateColor(),
         time = uiState.getRemainingTimeFormatted(),
-        stateName = stringResource(uiState.intervalState.getStateStringRes()),
-        isPauseResumeButtonVisible = uiState.isPauseResumeButtonVisible(),
-        pauseResumeButtonText = getPauseResumeButtonText(uiState.isTimerRunning, LocalContext.current),
+        stateNameRes = uiState.intervalState.getStateStringRes(),
+        pauseResumeButtonIconResource = if (uiState.isTimerRunning) R.drawable.ic_pause else R.drawable.ic_play,
+        pauseResumeButtonContentDescriptionRes = if (uiState.isTimerRunning) R.string.pause else R.string.resume,
         onPauseResumeButtonClick = timerViewModel::pauseOrResumeTimer,
         onEndTimerButtonClick = { timerViewModel.requestEndTimer(onEndTimer = onEndTimer) }
     )
@@ -106,25 +108,22 @@ private fun TimerViewModel.IntervalState.toStateColor() = when (this) {
     DONE -> Color.Cyan
 }
 
-private fun getPauseResumeButtonText(isTimerRunning: Boolean, context: Context): String {
-    return if (isTimerRunning) context.getString(R.string.stop) else context.getString(R.string.resume)
-}
-
 @Composable
 private fun Timer(
     modifier: Modifier = Modifier,
+    showDoneMessage: Boolean,
     remainingIntervals: String,
     percentageDone: Float,
     stateColor: Color,
     time: String,
-    stateName: String,
-    isPauseResumeButtonVisible: Boolean,
-    pauseResumeButtonText: String,
+    stateNameRes: Int,
+    pauseResumeButtonIconResource: Int,
+    pauseResumeButtonContentDescriptionRes: Int,
     onPauseResumeButtonClick: () -> Unit,
     onEndTimerButtonClick: () -> Unit
 ) {
     ConstraintLayout(modifier = modifier.fillMaxSize()) {
-        val (constRefIconButtonCloseTimer, constRefTextIntervalsLeft, constRefProgressTimer, constRefTextProgressState, constRefButtonPauseResume) = createRefs()
+        val (constRefIconButtonCloseTimer, constRefDoneMessage, constRefTextIntervalsLeft, constRefProgressTimer, constRefTextProgressState, constRefButtonPauseResume) = createRefs()
         IconButton(
             modifier = Modifier
                 .constrainAs(constRefIconButtonCloseTimer) {
@@ -136,10 +135,25 @@ private fun Timer(
                 Icon(
                     modifier = Modifier.size(48.dp),
                     imageVector = Icons.Default.Close,
-                    contentDescription = null
+                    contentDescription = stringResource(R.string.end_timer)
                 )
             }
         )
+        if (showDoneMessage) {
+            Text(
+                modifier = Modifier
+                    .constrainAs(constRefDoneMessage) {
+                        centerVerticallyTo(parent)
+                        centerHorizontallyTo(parent)
+                    },
+                text = stringResource(R.string.done),
+                style = TextStyle(
+                    fontSize = 70.sp,
+                    fontWeight = FontWeight.Bold
+                )
+            )
+            return@ConstraintLayout
+        }
         Text(
             modifier = Modifier
                 .constrainAs(constRefTextIntervalsLeft) {
@@ -171,26 +185,29 @@ private fun Timer(
                     top.linkTo(constRefProgressTimer.bottom, margin = 20.dp)
                 }
                 .fillMaxWidth(),
-            text = stateName,
+            text = stringResource(stateNameRes),
             style = TextStyle(
                 fontSize = 70.sp,
                 fontWeight = FontWeight.Bold,
             ),
             textAlign = TextAlign.Center
         )
-        PauseResumeButton(
+        Button(
             modifier = Modifier
                 .constrainAs(constRefButtonPauseResume) {
                     top.linkTo(constRefTextProgressState.bottom)
                     start.linkTo(parent.start)
                     end.linkTo(parent.end)
                 }
-                .fillMaxWidth()
                 .padding(all = 20.dp),
-            visible = isPauseResumeButtonVisible,
-            buttonText = pauseResumeButtonText,
-            onClickAction = onPauseResumeButtonClick
-        )
+            onClick = onPauseResumeButtonClick
+        ) {
+            Icon(
+                modifier = Modifier.size(70.dp),
+                painter = painterResource(pauseResumeButtonIconResource),
+                contentDescription = stringResource(pauseResumeButtonContentDescriptionRes)
+            )
+        }
     }
 }
 
@@ -221,28 +238,6 @@ private fun ProgressTimer(
     }
 }
 
-@Composable
-private fun PauseResumeButton(
-    modifier: Modifier = Modifier,
-    visible: Boolean,
-    buttonText: String,
-    onClickAction: () -> Unit
-) {
-    if (!visible) return
-    Button(
-        modifier = modifier,
-        onClick = onClickAction
-    ) {
-        Text(
-            text = buttonText,
-            style = TextStyle(
-                fontSize = 70.sp
-            ),
-            textAlign = TextAlign.Center
-        )
-    }
-}
-
 @PreviewFontScale
 @PreviewScreenSizes
 @Preview
@@ -250,13 +245,14 @@ private fun PauseResumeButton(
 fun TimerPreview() {
     SimpleintervaltimerTheme {
         Timer(
+            showDoneMessage = false,
             remainingIntervals = "10",
             percentageDone = 0.5f,
             stateColor = Color.Green,
             time = "15,5",
-            stateName = "Work",
-            isPauseResumeButtonVisible = true,
-            pauseResumeButtonText = "Pause",
+            stateNameRes = R.string.work,
+            pauseResumeButtonIconResource = R.drawable.ic_pause,
+            pauseResumeButtonContentDescriptionRes = R.string.pause,
             onPauseResumeButtonClick = {},
             onEndTimerButtonClick = {}
         )

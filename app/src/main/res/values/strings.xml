@@ -31,7 +31,7 @@
     <string name="work">Work</string>
     <string name="rest">Rest</string>
     <string name="done">Done</string>
-    <string name="stop">Stop</string>
+    <string name="pause">Pause</string>
     <string name="resume">Resume</string>
     <string name="last_interval">Last Interval</string>
     <string name="null_string">null</string>
