@@ -45,7 +45,7 @@ import com.example.simpleintervaltimer.R
 import com.example.simpleintervaltimer.timer.data.db.realm_objects.StoredTimeInterval
 import com.example.simpleintervaltimer.timer.domain.models.TimeInterval
 import com.example.simpleintervaltimer.timer.presentation.components.SimpleConfirmationDialog
-import com.example.simpleintervaltimer.ui.theme.SimpleintervaltimerTheme
+import com.example.simpleintervaltimer.ui.theme.SimpleIntervalTimerTheme
 
 @Composable
 fun IntervalListScreen(
@@ -224,7 +224,7 @@ private fun HorizontalNameValuePair(
 @Preview
 @Composable
 fun StoredTimeIntervalCardPreview() {
-    SimpleintervaltimerTheme {
+    SimpleIntervalTimerTheme {
         val storedTimeInterval = StoredTimeInterval().apply {
             name = "My Time Interval"
             workTime = 10000L

@@ -42,7 +42,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.simpleintervaltimer.R
 import com.example.simpleintervaltimer.timer.domain.models.TimeInterval
-import com.example.simpleintervaltimer.ui.theme.SimpleintervaltimerTheme
+import com.example.simpleintervaltimer.ui.theme.SimpleIntervalTimerTheme
 
 const val WORK_TIME_INPUT_TEST_TAG = "WORK_TIME_INPUT_TEST_TAG"
 const val REST_TIME_INPUT_TEST_TAG = "REST_TIME_INPUT_TEST_TAG"
@@ -305,7 +305,7 @@ private fun UpDownNumberSelector(
 @Preview
 @Composable
 fun TimeIntervalInputPreview() {
-    SimpleintervaltimerTheme {
+    SimpleIntervalTimerTheme {
         TimeIntervalInput(
             initialTimeInterval = TimeInterval(30_000, 30_000, 10),
             onTimeIntervalChanged = {}

@@ -36,7 +36,7 @@ import com.example.simpleintervaltimer.timer.domain.models.TimeInterval
 import com.example.simpleintervaltimer.timer.presentation.components.LoadingScreen
 import com.example.simpleintervaltimer.timer.presentation.components.SimpleConfirmationDialog
 import com.example.simpleintervaltimer.timer.presentation.components.time_interval_input.TimeIntervalInput
-import com.example.simpleintervaltimer.ui.theme.SimpleintervaltimerTheme
+import com.example.simpleintervaltimer.ui.theme.SimpleIntervalTimerTheme
 
 @Composable
 fun EditStoredTimeIntervalScreen(
@@ -141,7 +141,7 @@ private fun EditTimeInterval(
 @Preview
 @Composable
 fun EditStoredTimeIntervalScreenPreview() {
-    SimpleintervaltimerTheme {
+    SimpleIntervalTimerTheme {
         EditTimeInterval(
             name = "test",
             initialTimeInterval = TimeInterval(30_000, 30_000, 10),

@@ -40,7 +40,7 @@ import com.example.simpleintervaltimer.timer.domain.models.TimeInterval
 import com.example.simpleintervaltimer.timer.domain.models.TimerSoundDefinition
 import com.example.simpleintervaltimer.timer.presentation.components.SimpleConfirmationDialog
 import com.example.simpleintervaltimer.timer.presentation.timer.TimerViewModel.IntervalState.*
-import com.example.simpleintervaltimer.ui.theme.SimpleintervaltimerTheme
+import com.example.simpleintervaltimer.ui.theme.SimpleIntervalTimerTheme
 
 @Composable
 fun TimerScreen(
@@ -243,7 +243,7 @@ private fun ProgressTimer(
 @Preview
 @Composable
 fun TimerPreview() {
-    SimpleintervaltimerTheme {
+    SimpleIntervalTimerTheme {
         Timer(
             showDoneMessage = false,
             remainingIntervals = "10",
