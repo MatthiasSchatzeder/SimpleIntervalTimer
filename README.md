@@ -10,7 +10,7 @@ android frameworks, libraries and principles. Some of which are:
 - Material 3
 - Android Navigation Component (with Jetpack Compose)
 - Datastore
-- Realm Database (by MongoDB)
+- Realm Database
 - Media3 ExoPlayer
 - ViewModel (MVVM architecture)
 - Single source of truth with Unidirectional Data Flow
@@ -19,6 +19,6 @@ android frameworks, libraries and principles. Some of which are:
 
 Some improvements that are planned:
 
-- Settings page to customize the timers color and sound
+- Settings page to customize the timer's color and sound
 - Timer controllable via notification center
 - (Picture in Picture mode)
