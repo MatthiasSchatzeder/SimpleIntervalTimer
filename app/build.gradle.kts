@@ -61,9 +61,9 @@ android {
     }
 }
 
-val composeBomVersion = "2024.12.01"
+val composeBomVersion = "2025.03.01"
 val lifecycleVersion = "2.8.7"
-val media3Version = "1.5.1"
+val media3Version = "1.6.0"
 
 dependencies {
     // UI
@@ -73,13 +73,13 @@ dependencies {
     implementation("androidx.compose.ui:ui-graphics")
     implementation("androidx.compose.ui:ui-tooling-preview")
     implementation("androidx.compose.material3:material3")
-    implementation("androidx.constraintlayout:constraintlayout-compose:1.1.0")
-    implementation("androidx.navigation:navigation-compose:2.8.5")
-    implementation("androidx.activity:activity-compose:1.9.3")
+    implementation("androidx.constraintlayout:constraintlayout-compose:1.1.1")
+    implementation("androidx.navigation:navigation-compose:2.8.9")
+    implementation("androidx.activity:activity-compose:1.10.1")
 
     // Data
-    implementation("androidx.datastore:datastore:1.1.1")
-    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.7.1")
+    implementation("androidx.datastore:datastore:1.1.4")
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.8.0")
     implementation("io.realm.kotlin:library-base:3.0.0")
 
     // Lifecycle
