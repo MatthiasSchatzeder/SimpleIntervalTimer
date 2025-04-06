@@ -6,11 +6,11 @@ import com.example.simpleintervaltimer.timer.domain.models.TimeInterval
 import kotlinx.coroutines.flow.Flow
 
 class TimerSettingsRepository(
-    private val timerSettingsLocalDataSource: TimerSettingsLocalDataSource
+	private val timerSettingsLocalDataSource: TimerSettingsLocalDataSource
 ) {
-    val timerSettingsFlow: Flow<TimerSettings> = timerSettingsLocalDataSource.timerSettingsFlow
+	val timerSettingsFlow: Flow<TimerSettings> = timerSettingsLocalDataSource.timerSettingsFlow
 
-    suspend fun updateQuickStartTimeInterval(timeInterval: TimeInterval) {
-        timerSettingsLocalDataSource.updateQuickStartTimeInterval(timeInterval)
-    }
+	suspend fun updateQuickStartTimeInterval(timeInterval: TimeInterval) {
+		timerSettingsLocalDataSource.updateQuickStartTimeInterval(timeInterval)
+	}
 }

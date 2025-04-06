@@ -49,174 +49,175 @@ import com.example.simpleintervaltimer.ui.theme.SimpleIntervalTimerTheme
 
 @Composable
 fun IntervalListScreen(
-    modifier: Modifier = Modifier,
-    intervalListViewModel: IntervalListViewModel = viewModel(
-        factory = IntervalListViewModelFactory()
-    ),
-    onStartTimer: (timeInterval: TimeInterval) -> Unit,
-    onEditTimeInterval: (storedTimeIntervalIdHexString: String) -> Unit
+	modifier: Modifier = Modifier,
+	intervalListViewModel: IntervalListViewModel = viewModel(
+		factory = IntervalListViewModelFactory()
+	),
+	onStartTimer: (timeInterval: TimeInterval) -> Unit,
+	onEditTimeInterval: (storedTimeIntervalIdHexString: String) -> Unit
 ) {
-    val uiState by intervalListViewModel.uiState.collectAsStateWithLifecycle()
-    Box(
-        modifier = modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center
-    ) {
-        if (uiState.isLoading) {
-            CircularProgressIndicator(modifier = Modifier.width(64.dp))
-            return
-        }
-        if (uiState.storedTimeIntervals.isEmpty()) {
-            Text(text = "Nothing saved yet")
-            return
-        }
-    }
-    SimpleConfirmationDialog(
-        showDialog = uiState.storedTimeIntervalToDelete != null,
-        title = stringResource(R.string.delete),
-        text = stringResource(
-            R.string.delete_interval_message_with_placeholder,
-            uiState.storedTimeIntervalToDelete?.name ?: stringResource(R.string.null_string)
-        ),
-        confirmButtonText = stringResource(R.string.delete),
-        dismissButtonText = stringResource(R.string.cancel),
-        onConfirm = {
-            uiState.storedTimeIntervalToDelete?.let {
-                intervalListViewModel.deleteStoredTimeInterval(it)
-            }
-        },
-        onDismissRequest = { intervalListViewModel.setStoredTimeIntervalToDelete(null) }
-    )
-    LazyColumn(
-        modifier = modifier.fillMaxSize(),
-        verticalArrangement = Arrangement.spacedBy(16.dp),
-        contentPadding = PaddingValues(16.dp)
-    ) {
-        items(
-            items = uiState.storedTimeIntervals,
-            key = { it._id.hashCode() }
-        ) { storedInterval ->
-            StoredTimeIntervalCard(
-                modifier = Modifier.animateItem(),
-                storedTimeInterval = storedInterval,
-                onStartTimer = onStartTimer,
-                onDeleteAction = { intervalListViewModel.setStoredTimeIntervalToDelete(storedInterval) },
-                onEditAction = { onEditTimeInterval(storedInterval._id.toHexString()) }
-            )
-        }
-    }
+	val uiState by intervalListViewModel.uiState.collectAsStateWithLifecycle()
+	Box(
+		modifier = modifier.fillMaxSize(),
+		contentAlignment = Alignment.Center
+	) {
+		if (uiState.isLoading) {
+			CircularProgressIndicator(modifier = Modifier.width(64.dp))
+			return
+		}
+		if (uiState.storedTimeIntervals.isEmpty()) {
+			Text(text = "Nothing saved yet")
+			return
+		}
+	}
+	SimpleConfirmationDialog(
+		showDialog = uiState.storedTimeIntervalToDelete != null,
+		title = stringResource(R.string.delete),
+		text = stringResource(
+			R.string.delete_interval_message_with_placeholder,
+			uiState.storedTimeIntervalToDelete?.name ?: stringResource(R.string.null_string)
+		),
+		confirmButtonText = stringResource(R.string.delete),
+		dismissButtonText = stringResource(R.string.cancel),
+		onConfirm = {
+			uiState.storedTimeIntervalToDelete?.let {
+				intervalListViewModel.deleteStoredTimeInterval(it)
+			}
+		},
+		onDismissRequest = { intervalListViewModel.setStoredTimeIntervalToDelete(null) }
+	)
+	LazyColumn(
+		modifier = modifier.fillMaxSize(),
+		verticalArrangement = Arrangement.spacedBy(16.dp),
+		contentPadding = PaddingValues(16.dp)
+	) {
+		items(
+			items = uiState.storedTimeIntervals,
+			key = { it._id.hashCode() }
+		) { storedInterval ->
+			StoredTimeIntervalCard(
+				modifier = Modifier.animateItem(),
+				storedTimeInterval = storedInterval,
+				onStartTimer = onStartTimer,
+				onDeleteAction = { intervalListViewModel.setStoredTimeIntervalToDelete(storedInterval) },
+				onEditAction = { onEditTimeInterval(storedInterval._id.toHexString()) }
+			)
+		}
+	}
 }
 
 @Composable
 private fun StoredTimeIntervalCard(
-    modifier: Modifier = Modifier,
-    storedTimeInterval: StoredTimeInterval,
-    onStartTimer: (timeInterval: TimeInterval) -> Unit,
-    onDeleteAction: () -> Unit,
-    onEditAction: () -> Unit
+	modifier: Modifier = Modifier,
+	storedTimeInterval: StoredTimeInterval,
+	onStartTimer: (timeInterval: TimeInterval) -> Unit,
+	onDeleteAction: () -> Unit,
+	onEditAction: () -> Unit
 ) {
-    Card(modifier = modifier) {
-        Column(modifier = Modifier.padding(16.dp)) {
-            Text(
-                fontSize = 24.sp,
-                text = storedTimeInterval.name,
-                maxLines = 2,
-                overflow = TextOverflow.Ellipsis
-            )
-            Spacer(modifier = Modifier.height(16.dp))
-            val timeInterval = TimeInterval(storedTimeInterval.workTime, storedTimeInterval.restTime, storedTimeInterval.intervals)
-            HorizontalNameValuePair(
-                name = stringResource(R.string.intervals),
-                value = timeInterval.intervals.toString()
-            )
-            HorizontalDivider()
-            HorizontalNameValuePair(
-                name = stringResource(R.string.work_time),
-                value = timeInterval.getDisplayWorkTime()
-            )
-            HorizontalDivider()
-            HorizontalNameValuePair(
-                name = stringResource(R.string.rest_time),
-                value = timeInterval.getDisplayRestTime()
-            )
-            Spacer(modifier = Modifier.height(16.dp))
-            CardActionButtons(
-                timeInterval = timeInterval,
-                onStartTimer = onStartTimer,
-                onDeleteAction = onDeleteAction,
-                onEditAction = onEditAction
-            )
-        }
-    }
+	Card(modifier = modifier) {
+		Column(modifier = Modifier.padding(16.dp)) {
+			Text(
+				fontSize = 24.sp,
+				text = storedTimeInterval.name,
+				maxLines = 2,
+				overflow = TextOverflow.Ellipsis
+			)
+			Spacer(modifier = Modifier.height(16.dp))
+			val timeInterval =
+				TimeInterval(storedTimeInterval.workTime, storedTimeInterval.restTime, storedTimeInterval.intervals)
+			HorizontalNameValuePair(
+				name = stringResource(R.string.intervals),
+				value = timeInterval.intervals.toString()
+			)
+			HorizontalDivider()
+			HorizontalNameValuePair(
+				name = stringResource(R.string.work_time),
+				value = timeInterval.getDisplayWorkTime()
+			)
+			HorizontalDivider()
+			HorizontalNameValuePair(
+				name = stringResource(R.string.rest_time),
+				value = timeInterval.getDisplayRestTime()
+			)
+			Spacer(modifier = Modifier.height(16.dp))
+			CardActionButtons(
+				timeInterval = timeInterval,
+				onStartTimer = onStartTimer,
+				onDeleteAction = onDeleteAction,
+				onEditAction = onEditAction
+			)
+		}
+	}
 }
 
 @Composable
 private fun CardActionButtons(
-    modifier: Modifier = Modifier,
-    timeInterval: TimeInterval,
-    onStartTimer: (TimeInterval) -> Unit,
-    onDeleteAction: () -> Unit,
-    onEditAction: () -> Unit
+	modifier: Modifier = Modifier,
+	timeInterval: TimeInterval,
+	onStartTimer: (TimeInterval) -> Unit,
+	onDeleteAction: () -> Unit,
+	onEditAction: () -> Unit
 ) {
-    Row(modifier = modifier) {
-        IconButton(
-            onClick = onDeleteAction
-        ) {
-            Icon(
-                imageVector = Icons.Default.Delete,
-                contentDescription = null
-            )
-        }
-        Spacer(modifier = Modifier.width(8.dp))
-        IconButton(
-            onClick = onEditAction
-        ) {
-            Icon(
-                imageVector = Icons.Default.Edit,
-                contentDescription = null
-            )
-        }
-        Spacer(
-            modifier = Modifier
-                .width(8.dp)
-                .weight(1f)
-        )
-        OutlinedButton(
-            onClick = { onStartTimer(timeInterval) }
-        ) {
-            Icon(
-                imageVector = Icons.Default.PlayArrow,
-                contentDescription = null
-            )
-            Spacer(modifier = Modifier.size(ButtonDefaults.IconSpacing))
-            Text(text = stringResource(R.string.start))
-        }
-    }
+	Row(modifier = modifier) {
+		IconButton(
+			onClick = onDeleteAction
+		) {
+			Icon(
+				imageVector = Icons.Default.Delete,
+				contentDescription = null
+			)
+		}
+		Spacer(modifier = Modifier.width(8.dp))
+		IconButton(
+			onClick = onEditAction
+		) {
+			Icon(
+				imageVector = Icons.Default.Edit,
+				contentDescription = null
+			)
+		}
+		Spacer(
+			modifier = Modifier
+				.width(8.dp)
+				.weight(1f)
+		)
+		OutlinedButton(
+			onClick = { onStartTimer(timeInterval) }
+		) {
+			Icon(
+				imageVector = Icons.Default.PlayArrow,
+				contentDescription = null
+			)
+			Spacer(modifier = Modifier.size(ButtonDefaults.IconSpacing))
+			Text(text = stringResource(R.string.start))
+		}
+	}
 }
 
 @Composable
 private fun HorizontalNameValuePair(
-    modifier: Modifier = Modifier,
-    name: String,
-    value: String
+	modifier: Modifier = Modifier,
+	name: String,
+	value: String
 ) {
-    Row(modifier = modifier) {
-        Text(
-            modifier = Modifier
-                .weight(1f)
-                .alpha(0.7f),
-            text = name,
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis
-        )
-        Spacer(modifier = Modifier.width(8.dp))
-        Text(
-            modifier = Modifier
-                .weight(1f),
-            text = value,
-            maxLines = 1,
-            textAlign = TextAlign.End
-        )
-    }
+	Row(modifier = modifier) {
+		Text(
+			modifier = Modifier
+				.weight(1f)
+				.alpha(0.7f),
+			text = name,
+			maxLines = 1,
+			overflow = TextOverflow.Ellipsis
+		)
+		Spacer(modifier = Modifier.width(8.dp))
+		Text(
+			modifier = Modifier
+				.weight(1f),
+			text = value,
+			maxLines = 1,
+			textAlign = TextAlign.End
+		)
+	}
 }
 
 @PreviewFontScale
@@ -224,19 +225,19 @@ private fun HorizontalNameValuePair(
 @Preview
 @Composable
 fun StoredTimeIntervalCardPreview() {
-    SimpleIntervalTimerTheme {
-        val storedTimeInterval = StoredTimeInterval().apply {
-            name = "My Time Interval"
-            workTime = 10000L
-            restTime = 5000L
-            intervals = 10
-        }
-        StoredTimeIntervalCard(
-            modifier = Modifier.fillMaxWidth(),
-            storedTimeInterval = storedTimeInterval,
-            onStartTimer = {},
-            onDeleteAction = {},
-            onEditAction = {}
-        )
-    }
+	SimpleIntervalTimerTheme {
+		val storedTimeInterval = StoredTimeInterval().apply {
+			name = "My Time Interval"
+			workTime = 10000L
+			restTime = 5000L
+			intervals = 10
+		}
+		StoredTimeIntervalCard(
+			modifier = Modifier.fillMaxWidth(),
+			storedTimeInterval = storedTimeInterval,
+			onStartTimer = {},
+			onDeleteAction = {},
+			onEditAction = {}
+		)
+	}
 }

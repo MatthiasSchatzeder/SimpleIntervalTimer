@@ -8,14 +8,14 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.withContext
 
 class TimerSettingsLocalDataSource(
-    private val timerSettingsDataStore: DataStore<TimerSettings>,
-    private val dispatcher: CoroutineDispatcher
+	private val timerSettingsDataStore: DataStore<TimerSettings>,
+	private val dispatcher: CoroutineDispatcher
 ) {
-    val timerSettingsFlow: Flow<TimerSettings> = timerSettingsDataStore.data
+	val timerSettingsFlow: Flow<TimerSettings> = timerSettingsDataStore.data
 
-    suspend fun updateQuickStartTimeInterval(timeInterval: TimeInterval) = withContext(dispatcher) {
-        timerSettingsDataStore.updateData { timerSettings ->
-            timerSettings.copy(quickStartTimeInterval = timeInterval)
-        }
-    }
+	suspend fun updateQuickStartTimeInterval(timeInterval: TimeInterval) = withContext(dispatcher) {
+		timerSettingsDataStore.updateData { timerSettings ->
+			timerSettings.copy(quickStartTimeInterval = timeInterval)
+		}
+	}
 }

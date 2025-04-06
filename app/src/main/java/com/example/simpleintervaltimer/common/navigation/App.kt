@@ -55,98 +55,98 @@ private data class EditStoredTimeIntervalRoute(val storedTimeIntervalIdHexString
 
 @Composable
 fun App() {
-    val navController = rememberNavController()
-    Scaffold(
-        bottomBar = { BottomNavBar(navController) }
-    ) { innerPadding ->
-        LockScreenOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT)
-        NavHost(
-            navController = navController,
-            startDestination = HomeRoute,
-            modifier = Modifier.padding(innerPadding),
-            enterTransition = { EnterTransition.None },
-            exitTransition = { ExitTransition.None }
-        ) {
-            composable<HomeRoute> {
-                HomeScreen(
-                    onStartTimer = { timeInterval ->
-                        navController.navigate(TimerRoute(timeInterval))
-                    }
-                )
-            }
+	val navController = rememberNavController()
+	Scaffold(
+		bottomBar = { BottomNavBar(navController) }
+	) { innerPadding ->
+		LockScreenOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT)
+		NavHost(
+			navController = navController,
+			startDestination = HomeRoute,
+			modifier = Modifier.padding(innerPadding),
+			enterTransition = { EnterTransition.None },
+			exitTransition = { ExitTransition.None }
+		) {
+			composable<HomeRoute> {
+				HomeScreen(
+					onStartTimer = { timeInterval ->
+						navController.navigate(TimerRoute(timeInterval))
+					}
+				)
+			}
 
-            composable<IntervalListRoute> {
-                IntervalListScreen(
-                    onStartTimer = { timeInterval ->
-                        navController.navigate(TimerRoute(timeInterval))
-                    },
-                    onEditTimeInterval = { storedTimeIntervalIdHexString ->
-                        navController.navigate(EditStoredTimeIntervalRoute(storedTimeIntervalIdHexString))
-                    }
-                )
-            }
+			composable<IntervalListRoute> {
+				IntervalListScreen(
+					onStartTimer = { timeInterval ->
+						navController.navigate(TimerRoute(timeInterval))
+					},
+					onEditTimeInterval = { storedTimeIntervalIdHexString ->
+						navController.navigate(EditStoredTimeIntervalRoute(storedTimeIntervalIdHexString))
+					}
+				)
+			}
 
-            composable<EditStoredTimeIntervalRoute> {
-                EditStoredTimeIntervalScreen(
-                    storedTimeIntervalIdHexString = it.toRoute<EditStoredTimeIntervalRoute>().storedTimeIntervalIdHexString,
-                    onEditFinished = {
-                        navController.popBackStack()
-                    }
-                )
-            }
+			composable<EditStoredTimeIntervalRoute> {
+				EditStoredTimeIntervalScreen(
+					storedTimeIntervalIdHexString = it.toRoute<EditStoredTimeIntervalRoute>().storedTimeIntervalIdHexString,
+					onEditFinished = {
+						navController.popBackStack()
+					}
+				)
+			}
 
-            composable<TimerRoute>(
-                typeMap = mapOf(
-                    typeOf<TimeInterval>() to TimeInterval.CustomNavType
-                )
-            ) {
-                val timerRoute = it.toRoute<TimerRoute>()
-                TimerScreen(
-                    timeInterval = timerRoute.timeInterval,
-                    onEndTimer = { navController.popBackStack() }
-                )
-            }
-        }
-    }
+			composable<TimerRoute>(
+				typeMap = mapOf(
+					typeOf<TimeInterval>() to TimeInterval.CustomNavType
+				)
+			) {
+				val timerRoute = it.toRoute<TimerRoute>()
+				TimerScreen(
+					timeInterval = timerRoute.timeInterval,
+					onEndTimer = { navController.popBackStack() }
+				)
+			}
+		}
+	}
 }
 
 private data class TopLevelRoute<T : Any>(@StringRes val nameRes: Int, val route: T, val icon: ImageVector)
 
 private val topLevelRoutes = listOf(
-    TopLevelRoute(R.string.home, HomeRoute, Icons.Filled.Home),
-    TopLevelRoute(R.string.my_intervals, IntervalListRoute, Icons.AutoMirrored.Filled.List)
+	TopLevelRoute(R.string.home, HomeRoute, Icons.Filled.Home),
+	TopLevelRoute(R.string.my_intervals, IntervalListRoute, Icons.AutoMirrored.Filled.List)
 )
 
 @Composable
 private fun BottomNavBar(navController: NavHostController) {
-    val navBackStackEntry by navController.currentBackStackEntryAsState()
-    val currentDestination = navBackStackEntry?.destination
-    AnimatedVisibility(
-        visible = showBottomNavigation(currentDestination),
-        enter = expandVertically(),
-        exit = shrinkVertically()
-    ) {
-        NavigationBar {
-            topLevelRoutes.forEach { topLevelRoute ->
-                NavigationBarItem(
-                    label = { Text(stringResource(topLevelRoute.nameRes)) },
-                    icon = { Icon(topLevelRoute.icon, stringResource(topLevelRoute.nameRes)) },
-                    selected = currentDestination?.hierarchy?.any { it.hasRoute(topLevelRoute.route::class) } == true,
-                    onClick = {
-                        navController.navigate(topLevelRoute.route) {
-                            popUpTo(navController.graph.findStartDestination().id) {
-                                saveState = true
-                            }
-                            launchSingleTop = true
-                            restoreState = true
-                        }
-                    }
-                )
-            }
-        }
-    }
+	val navBackStackEntry by navController.currentBackStackEntryAsState()
+	val currentDestination = navBackStackEntry?.destination
+	AnimatedVisibility(
+		visible = showBottomNavigation(currentDestination),
+		enter = expandVertically(),
+		exit = shrinkVertically()
+	) {
+		NavigationBar {
+			topLevelRoutes.forEach { topLevelRoute ->
+				NavigationBarItem(
+					label = { Text(stringResource(topLevelRoute.nameRes)) },
+					icon = { Icon(topLevelRoute.icon, stringResource(topLevelRoute.nameRes)) },
+					selected = currentDestination?.hierarchy?.any { it.hasRoute(topLevelRoute.route::class) } == true,
+					onClick = {
+						navController.navigate(topLevelRoute.route) {
+							popUpTo(navController.graph.findStartDestination().id) {
+								saveState = true
+							}
+							launchSingleTop = true
+							restoreState = true
+						}
+					}
+				)
+			}
+		}
+	}
 }
 
 private fun showBottomNavigation(navDestination: NavDestination?): Boolean {
-    return topLevelRoutes.any { navDestination?.hasRoute(it.route::class) == true }
+	return topLevelRoutes.any { navDestination?.hasRoute(it.route::class) == true }
 }

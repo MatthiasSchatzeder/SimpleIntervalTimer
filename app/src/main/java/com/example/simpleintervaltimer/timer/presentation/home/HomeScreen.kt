@@ -43,124 +43,124 @@ import kotlinx.coroutines.Dispatchers
 
 @Composable
 fun HomeScreen(
-    modifier: Modifier = Modifier,
-    onStartTimer: (timeInterval: TimeInterval) -> Unit
+	modifier: Modifier = Modifier,
+	onStartTimer: (timeInterval: TimeInterval) -> Unit
 ) {
-    QuickStartTimer(
-        modifier = modifier,
-        onStartTimer = onStartTimer
-    )
+	QuickStartTimer(
+		modifier = modifier,
+		onStartTimer = onStartTimer
+	)
 }
 
 @Composable
 fun QuickStartTimer(
-    modifier: Modifier = Modifier,
-    onStartTimer: (timeInterval: TimeInterval) -> Unit,
-    quickStartViewModel: QuickStartViewModel = viewModel(
-        factory = QuickStartViewModelFactory(
-            TimerSettingsRepository(
-                TimerSettingsLocalDataSource(
-                    LocalContext.current.timerSettingsDataStore,
-                    Dispatchers.Default
-                )
-            )
-        )
-    )
+	modifier: Modifier = Modifier,
+	onStartTimer: (timeInterval: TimeInterval) -> Unit,
+	quickStartViewModel: QuickStartViewModel = viewModel(
+		factory = QuickStartViewModelFactory(
+			TimerSettingsRepository(
+				TimerSettingsLocalDataSource(
+					LocalContext.current.timerSettingsDataStore,
+					Dispatchers.Default
+				)
+			)
+		)
+	)
 ) {
-    val uiState by quickStartViewModel.uiState.collectAsStateWithLifecycle()
-    if (uiState.isLoading) {
-        return
-    }
-    InputTextDialog(
-        showDialog = uiState.showNameInput,
-        onDismissRequest = { quickStartViewModel.dismissNameInput() },
-        onConfirm = { name -> quickStartViewModel.saveInterval(name) }
-    )
-    Column(
-        modifier = modifier
-            .fillMaxSize()
-            .padding(16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
-    ) {
-        TimeIntervalInput(
-            initialTimeInterval = uiState.timeInterval,
-            onTimeIntervalChanged = {
-                quickStartViewModel.setInterval(it)
-            }
-        )
-        Spacer(modifier = Modifier.height(8.dp))
-        TextButton(
-            modifier = Modifier
-                .align(Alignment.End),
-            onClick = { quickStartViewModel.showNameInput() }
-        ) {
-            Icon(
-                painter = painterResource(R.drawable.ic_save),
-                contentDescription = null
-            )
-            Spacer(modifier = Modifier.size(ButtonDefaults.IconSpacing))
-            Text(text = stringResource(R.string.save))
-        }
-        Spacer(modifier = Modifier.height(8.dp))
-        Button(
-            modifier = Modifier.fillMaxWidth(),
-            onClick = {
-                quickStartViewModel.startTimer(onStartTimer)
-            }
-        ) {
-            Text(
-                text = stringResource(R.string.start_timer),
-                style = TextStyle(
-                    fontSize = 50.sp
-                ),
-                textAlign = TextAlign.Center
-            )
-        }
-    }
+	val uiState by quickStartViewModel.uiState.collectAsStateWithLifecycle()
+	if (uiState.isLoading) {
+		return
+	}
+	InputTextDialog(
+		showDialog = uiState.showNameInput,
+		onDismissRequest = { quickStartViewModel.dismissNameInput() },
+		onConfirm = { name -> quickStartViewModel.saveInterval(name) }
+	)
+	Column(
+		modifier = modifier
+			.fillMaxSize()
+			.padding(16.dp),
+		horizontalAlignment = Alignment.CenterHorizontally,
+		verticalArrangement = Arrangement.Center
+	) {
+		TimeIntervalInput(
+			initialTimeInterval = uiState.timeInterval,
+			onTimeIntervalChanged = {
+				quickStartViewModel.setInterval(it)
+			}
+		)
+		Spacer(modifier = Modifier.height(8.dp))
+		TextButton(
+			modifier = Modifier
+				.align(Alignment.End),
+			onClick = { quickStartViewModel.showNameInput() }
+		) {
+			Icon(
+				painter = painterResource(R.drawable.ic_save),
+				contentDescription = null
+			)
+			Spacer(modifier = Modifier.size(ButtonDefaults.IconSpacing))
+			Text(text = stringResource(R.string.save))
+		}
+		Spacer(modifier = Modifier.height(8.dp))
+		Button(
+			modifier = Modifier.fillMaxWidth(),
+			onClick = {
+				quickStartViewModel.startTimer(onStartTimer)
+			}
+		) {
+			Text(
+				text = stringResource(R.string.start_timer),
+				style = TextStyle(
+					fontSize = 50.sp
+				),
+				textAlign = TextAlign.Center
+			)
+		}
+	}
 }
 
 @Composable
 fun InputTextDialog(
-    modifier: Modifier = Modifier,
-    showDialog: Boolean,
-    onDismissRequest: () -> Unit,
-    onConfirm: (String) -> Unit
+	modifier: Modifier = Modifier,
+	showDialog: Boolean,
+	onDismissRequest: () -> Unit,
+	onConfirm: (String) -> Unit
 ) {
-    if (!showDialog) return
-    var text by remember { mutableStateOf("") }
-    AlertDialog(
-        modifier = modifier,
-        onDismissRequest = { onDismissRequest() },
-        title = { Text(stringResource(R.string.enter_name)) },
-        text = {
-            OutlinedTextField(
-                value = text,
-                onValueChange = { text = it },
-                label = { Text(text = stringResource(R.string.name)) }
-            )
-        },
-        confirmButton = {
-            Button(
-                onClick = { onConfirm(text) }
-            ) {
-                Text(text = stringResource(R.string.confirm))
-            }
-        },
-        dismissButton = {
-            Button(
-                onClick = { onDismissRequest() }
-            ) {
-                Text(text = stringResource(R.string.dismiss))
-            }
-        }
-    )
+	if (!showDialog) return
+	var text by remember { mutableStateOf("") }
+	AlertDialog(
+		modifier = modifier,
+		onDismissRequest = { onDismissRequest() },
+		title = { Text(stringResource(R.string.enter_name)) },
+		text = {
+			OutlinedTextField(
+				value = text,
+				onValueChange = { text = it },
+				label = { Text(text = stringResource(R.string.name)) }
+			)
+		},
+		confirmButton = {
+			Button(
+				onClick = { onConfirm(text) }
+			) {
+				Text(text = stringResource(R.string.confirm))
+			}
+		},
+		dismissButton = {
+			Button(
+				onClick = { onDismissRequest() }
+			) {
+				Text(text = stringResource(R.string.dismiss))
+			}
+		}
+	)
 }
 
 @Preview(showBackground = true)
 @Composable
 private fun HomeScreenPreview() {
-    SimpleIntervalTimerTheme {
-        HomeScreen(onStartTimer = {})
-    }
+	SimpleIntervalTimerTheme {
+		HomeScreen(onStartTimer = {})
+	}
 }

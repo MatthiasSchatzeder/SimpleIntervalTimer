@@ -15,26 +15,26 @@ val Context.timerSettingsDataStore by dataStore("timer-settings.json", TimerSett
 
 @Serializable
 data class TimerSettings(
-    val quickStartTimeInterval: TimeInterval = TimeInterval(30_000, 30_000, 10)
+	val quickStartTimeInterval: TimeInterval = TimeInterval(30_000, 30_000, 10)
 )
 
 private object TimerSettingsSerializer : Serializer<TimerSettings> {
-    override val defaultValue = TimerSettings()
+	override val defaultValue = TimerSettings()
 
-    override suspend fun readFrom(input: InputStream): TimerSettings {
-        try {
-            return Json.decodeFromString(
-                TimerSettings.serializer(), input.readBytes().decodeToString()
-            )
-        } catch (exception: SerializationException) {
-            throw CorruptionException("Unable to read TimerSettings", exception)
-        }
-    }
+	override suspend fun readFrom(input: InputStream): TimerSettings {
+		try {
+			return Json.decodeFromString(
+				TimerSettings.serializer(), input.readBytes().decodeToString()
+			)
+		} catch (exception: SerializationException) {
+			throw CorruptionException("Unable to read TimerSettings", exception)
+		}
+	}
 
-    override suspend fun writeTo(timerSettings: TimerSettings, output: OutputStream) {
-        output.write(
-            Json.encodeToString(TimerSettings.serializer(), timerSettings)
-                .encodeToByteArray()
-        )
-    }
+	override suspend fun writeTo(timerSettings: TimerSettings, output: OutputStream) {
+		output.write(
+			Json.encodeToString(TimerSettings.serializer(), timerSettings)
+				.encodeToByteArray()
+		)
+	}
 }

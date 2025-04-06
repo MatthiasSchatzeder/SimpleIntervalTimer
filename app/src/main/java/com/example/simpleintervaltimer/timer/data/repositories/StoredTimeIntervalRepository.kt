@@ -5,23 +5,23 @@ import com.example.simpleintervaltimer.timer.data.db.realm_objects.StoredTimeInt
 import org.mongodb.kbson.ObjectId
 
 class StoredTimeIntervalRepository(
-    private val storedTimeIntervalLocalDataSource: StoredTimeIntervalLocalDataSource = StoredTimeIntervalLocalDataSource(),
+	private val storedTimeIntervalLocalDataSource: StoredTimeIntervalLocalDataSource = StoredTimeIntervalLocalDataSource(),
 ) {
-    val storedTimeIntervalsFlow = storedTimeIntervalLocalDataSource.storedTimeIntervalsFlow
+	val storedTimeIntervalsFlow = storedTimeIntervalLocalDataSource.storedTimeIntervalsFlow
 
-    suspend fun addStoredTimeInterval(storedTimeInterval: StoredTimeInterval) {
-        storedTimeIntervalLocalDataSource.addStoredTimeInterval(storedTimeInterval)
-    }
+	suspend fun addStoredTimeInterval(storedTimeInterval: StoredTimeInterval) {
+		storedTimeIntervalLocalDataSource.addStoredTimeInterval(storedTimeInterval)
+	}
 
-    suspend fun getStoredTimeInterval(storedTimeIntervalId: ObjectId): StoredTimeInterval? {
-        return storedTimeIntervalLocalDataSource.getStoredTimeInterval(storedTimeIntervalId)
-    }
+	suspend fun getStoredTimeInterval(storedTimeIntervalId: ObjectId): StoredTimeInterval? {
+		return storedTimeIntervalLocalDataSource.getStoredTimeInterval(storedTimeIntervalId)
+	}
 
-    suspend fun updateStoredTimeInterval(storedTimeInterval: StoredTimeInterval) {
-        storedTimeIntervalLocalDataSource.updateStoredTimeInterval(storedTimeInterval)
-    }
+	suspend fun updateStoredTimeInterval(storedTimeInterval: StoredTimeInterval) {
+		storedTimeIntervalLocalDataSource.updateStoredTimeInterval(storedTimeInterval)
+	}
 
-    suspend fun deleteStoredTimeInterval(storedTimeInterval: StoredTimeInterval) {
-        storedTimeIntervalLocalDataSource.deleteStoredTimeInterval(storedTimeInterval)
-    }
+	suspend fun deleteStoredTimeInterval(storedTimeInterval: StoredTimeInterval) {
+		storedTimeIntervalLocalDataSource.deleteStoredTimeInterval(storedTimeInterval)
+	}
 }

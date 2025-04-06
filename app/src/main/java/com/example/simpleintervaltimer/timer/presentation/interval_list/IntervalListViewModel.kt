@@ -12,40 +12,40 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 class IntervalListViewModelFactory(
-    private val storedTimeIntervalRepository: StoredTimeIntervalRepository = StoredTimeIntervalRepository()
+	private val storedTimeIntervalRepository: StoredTimeIntervalRepository = StoredTimeIntervalRepository()
 ) : ViewModelProvider.Factory {
-    @Suppress("UNCHECKED_CAST")
-    override fun <T : ViewModel> create(modelClass: Class<T>): T = IntervalListViewModel(storedTimeIntervalRepository) as T
+	@Suppress("UNCHECKED_CAST")
+	override fun <T : ViewModel> create(modelClass: Class<T>): T = IntervalListViewModel(storedTimeIntervalRepository) as T
 }
 
 class IntervalListViewModel(
-    private val storedTimeIntervalRepository: StoredTimeIntervalRepository
+	private val storedTimeIntervalRepository: StoredTimeIntervalRepository
 ) : ViewModel() {
-    private val _uiState = MutableStateFlow(UiState(isLoading = true))
-    val uiState = _uiState
-        .onStart { startCollectFromRepository() }
-        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), UiState(isLoading = true))
+	private val _uiState = MutableStateFlow(UiState(isLoading = true))
+	val uiState = _uiState
+		.onStart { startCollectFromRepository() }
+		.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), UiState(isLoading = true))
 
-    private fun startCollectFromRepository() = viewModelScope.launch {
-        storedTimeIntervalRepository.storedTimeIntervalsFlow.collect { storedTimeIntervals ->
-            _uiState.value = _uiState.value.copy(isLoading = false, storedTimeIntervals = storedTimeIntervals)
-        }
-    }
+	private fun startCollectFromRepository() = viewModelScope.launch {
+		storedTimeIntervalRepository.storedTimeIntervalsFlow.collect { storedTimeIntervals ->
+			_uiState.value = _uiState.value.copy(isLoading = false, storedTimeIntervals = storedTimeIntervals)
+		}
+	}
 
-    data class UiState(
-        val isLoading: Boolean = false,
-        val storedTimeIntervals: List<StoredTimeInterval> = emptyList(),
-        val storedTimeIntervalToDelete: StoredTimeInterval? = null
-    )
+	data class UiState(
+		val isLoading: Boolean = false,
+		val storedTimeIntervals: List<StoredTimeInterval> = emptyList(),
+		val storedTimeIntervalToDelete: StoredTimeInterval? = null
+	)
 
-    fun setStoredTimeIntervalToDelete(storedTimeInterval: StoredTimeInterval?) {
-        _uiState.value = _uiState.value.copy(storedTimeIntervalToDelete = storedTimeInterval)
-    }
+	fun setStoredTimeIntervalToDelete(storedTimeInterval: StoredTimeInterval?) {
+		_uiState.value = _uiState.value.copy(storedTimeIntervalToDelete = storedTimeInterval)
+	}
 
-    fun deleteStoredTimeInterval(storedTimeInterval: StoredTimeInterval) {
-        setStoredTimeIntervalToDelete(null)
-        viewModelScope.launch {
-            storedTimeIntervalRepository.deleteStoredTimeInterval(storedTimeInterval)
-        }
-    }
+	fun deleteStoredTimeInterval(storedTimeInterval: StoredTimeInterval) {
+		setStoredTimeIntervalToDelete(null)
+		viewModelScope.launch {
+			storedTimeIntervalRepository.deleteStoredTimeInterval(storedTimeInterval)
+		}
+	}
 }

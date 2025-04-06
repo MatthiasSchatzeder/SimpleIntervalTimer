@@ -40,100 +40,100 @@ import com.example.simpleintervaltimer.ui.theme.SimpleIntervalTimerTheme
 
 @Composable
 fun EditStoredTimeIntervalScreen(
-    modifier: Modifier = Modifier,
-    storedTimeIntervalIdHexString: String,
-    editIntervalViewModel: EditIntervalViewModel = viewModel(
-        factory = EditIntervalViewModelFactory(storedTimeIntervalIdHexString)
-    ),
-    onEditFinished: () -> Unit
+	modifier: Modifier = Modifier,
+	storedTimeIntervalIdHexString: String,
+	editIntervalViewModel: EditIntervalViewModel = viewModel(
+		factory = EditIntervalViewModelFactory(storedTimeIntervalIdHexString)
+	),
+	onEditFinished: () -> Unit
 ) {
-    BackHandler {
-        editIntervalViewModel.cancelEdit(onEditFinished)
-    }
-    val uiState by editIntervalViewModel.uiState.collectAsStateWithLifecycle()
-    val name = uiState.name
-    val initialTimeInterval = uiState.timeInterval
-    if (uiState.isLoading || name == null || initialTimeInterval == null) {
-        LoadingScreen(modifier)
-        return
-    }
-    SimpleConfirmationDialog(
-        showDialog = uiState.showDiscardChangesDialog,
-        title = stringResource(R.string.discard_changes_title),
-        text = stringResource(R.string.discard_changes_message),
-        confirmButtonText = stringResource(R.string.discard),
-        dismissButtonText = stringResource(R.string.cancel),
-        onConfirm = onEditFinished,
-        onDismissRequest = { editIntervalViewModel.dismissDiscardChangesDialog() }
-    )
-    EditTimeInterval(
-        modifier = modifier,
-        name = name,
-        initialTimeInterval = initialTimeInterval,
-        onNameChanged = { editIntervalViewModel.onNameChanged(it) },
-        onTimeIntervalChanged = { editIntervalViewModel.onTimeIntervalChanged(it) },
-        onCancelRequested = { editIntervalViewModel.cancelEdit(onEditFinished) },
-        onSaveRequested = { editIntervalViewModel.saveChanges(onEditFinished) }
-    )
+	BackHandler {
+		editIntervalViewModel.cancelEdit(onEditFinished)
+	}
+	val uiState by editIntervalViewModel.uiState.collectAsStateWithLifecycle()
+	val name = uiState.name
+	val initialTimeInterval = uiState.timeInterval
+	if (uiState.isLoading || name == null || initialTimeInterval == null) {
+		LoadingScreen(modifier)
+		return
+	}
+	SimpleConfirmationDialog(
+		showDialog = uiState.showDiscardChangesDialog,
+		title = stringResource(R.string.discard_changes_title),
+		text = stringResource(R.string.discard_changes_message),
+		confirmButtonText = stringResource(R.string.discard),
+		dismissButtonText = stringResource(R.string.cancel),
+		onConfirm = onEditFinished,
+		onDismissRequest = { editIntervalViewModel.dismissDiscardChangesDialog() }
+	)
+	EditTimeInterval(
+		modifier = modifier,
+		name = name,
+		initialTimeInterval = initialTimeInterval,
+		onNameChanged = { editIntervalViewModel.onNameChanged(it) },
+		onTimeIntervalChanged = { editIntervalViewModel.onTimeIntervalChanged(it) },
+		onCancelRequested = { editIntervalViewModel.cancelEdit(onEditFinished) },
+		onSaveRequested = { editIntervalViewModel.saveChanges(onEditFinished) }
+	)
 }
 
 @Composable
 private fun EditTimeInterval(
-    modifier: Modifier = Modifier,
-    name: String,
-    initialTimeInterval: TimeInterval,
-    onNameChanged: (String) -> Unit,
-    onTimeIntervalChanged: (TimeInterval) -> Unit,
-    onCancelRequested: () -> Unit,
-    onSaveRequested: () -> Unit
+	modifier: Modifier = Modifier,
+	name: String,
+	initialTimeInterval: TimeInterval,
+	onNameChanged: (String) -> Unit,
+	onTimeIntervalChanged: (TimeInterval) -> Unit,
+	onCancelRequested: () -> Unit,
+	onSaveRequested: () -> Unit
 ) {
-    Box(
-        modifier = modifier
-            .fillMaxSize()
-            .padding(8.dp)
-    ) {
-        IconButton(
-            modifier = Modifier.align(Alignment.TopStart),
-            onClick = onCancelRequested,
-            content = {
-                Icon(
-                    modifier = Modifier.size(48.dp),
-                    imageVector = Icons.Default.Close,
-                    contentDescription = stringResource(R.string.cancel)
-                )
-            }
-        )
-        Column(
-            modifier = Modifier
-                .align(Alignment.Center)
-                .width(200.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
-        ) {
-            OutlinedTextField(
-                modifier = Modifier.fillMaxWidth(),
-                value = name,
-                textStyle = TextStyle(fontSize = 30.sp),
-                onValueChange = onNameChanged,
-                label = { Text(stringResource(R.string.name)) }
-            )
-            Spacer(Modifier.height(8.dp))
-            TimeIntervalInput(
-                initialTimeInterval = initialTimeInterval,
-                onTimeIntervalChanged = onTimeIntervalChanged
-            )
-            Spacer(Modifier.height(8.dp))
-            Button(
-                modifier = Modifier.fillMaxWidth(),
-                onClick = onSaveRequested
-            ) {
-                Text(
-                    text = stringResource(R.string.save),
-                    fontSize = 30.sp
-                )
-            }
-        }
-    }
+	Box(
+		modifier = modifier
+			.fillMaxSize()
+			.padding(8.dp)
+	) {
+		IconButton(
+			modifier = Modifier.align(Alignment.TopStart),
+			onClick = onCancelRequested,
+			content = {
+				Icon(
+					modifier = Modifier.size(48.dp),
+					imageVector = Icons.Default.Close,
+					contentDescription = stringResource(R.string.cancel)
+				)
+			}
+		)
+		Column(
+			modifier = Modifier
+				.align(Alignment.Center)
+				.width(200.dp),
+			horizontalAlignment = Alignment.CenterHorizontally,
+			verticalArrangement = Arrangement.Center
+		) {
+			OutlinedTextField(
+				modifier = Modifier.fillMaxWidth(),
+				value = name,
+				textStyle = TextStyle(fontSize = 30.sp),
+				onValueChange = onNameChanged,
+				label = { Text(stringResource(R.string.name)) }
+			)
+			Spacer(Modifier.height(8.dp))
+			TimeIntervalInput(
+				initialTimeInterval = initialTimeInterval,
+				onTimeIntervalChanged = onTimeIntervalChanged
+			)
+			Spacer(Modifier.height(8.dp))
+			Button(
+				modifier = Modifier.fillMaxWidth(),
+				onClick = onSaveRequested
+			) {
+				Text(
+					text = stringResource(R.string.save),
+					fontSize = 30.sp
+				)
+			}
+		}
+	}
 }
 
 @PreviewFontScale
@@ -141,14 +141,14 @@ private fun EditTimeInterval(
 @Preview
 @Composable
 fun EditStoredTimeIntervalScreenPreview() {
-    SimpleIntervalTimerTheme {
-        EditTimeInterval(
-            name = "test",
-            initialTimeInterval = TimeInterval(30_000, 30_000, 10),
-            onNameChanged = {},
-            onTimeIntervalChanged = {},
-            onCancelRequested = {},
-            onSaveRequested = {}
-        )
-    }
+	SimpleIntervalTimerTheme {
+		EditTimeInterval(
+			name = "test",
+			initialTimeInterval = TimeInterval(30_000, 30_000, 10),
+			onNameChanged = {},
+			onTimeIntervalChanged = {},
+			onCancelRequested = {},
+			onSaveRequested = {}
+		)
+	}
 }

@@ -12,51 +12,51 @@ import com.example.simpleintervaltimer.ui.theme.SimpleIntervalTimerTheme
 
 @Composable
 fun SimpleConfirmationDialog(
-    modifier: Modifier = Modifier,
-    showDialog: Boolean,
-    title: String,
-    text: String? = null,
-    confirmButtonText: String,
-    dismissButtonText: String,
-    onConfirm: () -> Unit,
-    onDismissRequest: () -> Unit
+	modifier: Modifier = Modifier,
+	showDialog: Boolean,
+	title: String,
+	text: String? = null,
+	confirmButtonText: String,
+	dismissButtonText: String,
+	onConfirm: () -> Unit,
+	onDismissRequest: () -> Unit
 ) {
-    if (!showDialog) return
-    AlertDialog(
-        modifier = modifier,
-        title = { Text(title) },
-        text = { text?.let { Text(it) } },
-        onDismissRequest = { onDismissRequest() },
-        confirmButton = {
-            Button(
-                onClick = {
-                    onConfirm()
-                }
-            ) {
-                Text(confirmButtonText)
-            }
-        },
-        dismissButton = {
-            Button(
-                onClick = { onDismissRequest() }
-            ) {
-                Text(dismissButtonText)
-            }
-        }
-    )
+	if (!showDialog) return
+	AlertDialog(
+		modifier = modifier,
+		title = { Text(title) },
+		text = { text?.let { Text(it) } },
+		onDismissRequest = { onDismissRequest() },
+		confirmButton = {
+			Button(
+				onClick = {
+					onConfirm()
+				}
+			) {
+				Text(confirmButtonText)
+			}
+		},
+		dismissButton = {
+			Button(
+				onClick = { onDismissRequest() }
+			) {
+				Text(dismissButtonText)
+			}
+		}
+	)
 }
 
 @Preview(showBackground = true)
 @Composable
 fun SimpleConfirmationDialogPreview() {
-    SimpleIntervalTimerTheme {
-        SimpleConfirmationDialog(
-            showDialog = true,
-            title = "Title: this is some long title of this button that is very long",
-            confirmButtonText = stringResource(R.string.confirm),
-            dismissButtonText = stringResource(R.string.dismiss),
-            onConfirm = {},
-            onDismissRequest = {}
-        )
-    }
+	SimpleIntervalTimerTheme {
+		SimpleConfirmationDialog(
+			showDialog = true,
+			title = "Title: this is some long title of this button that is very long",
+			confirmButtonText = stringResource(R.string.confirm),
+			dismissButtonText = stringResource(R.string.dismiss),
+			onConfirm = {},
+			onDismissRequest = {}
+		)
+	}
 }
