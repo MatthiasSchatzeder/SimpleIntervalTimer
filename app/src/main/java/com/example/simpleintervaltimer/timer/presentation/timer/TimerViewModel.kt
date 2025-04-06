@@ -146,6 +146,15 @@ class TimerViewModel(
 		_uiState.value = _uiState.value.copy(showCloseTimerDialog = false)
 	}
 
+	fun toggleVolumeControl() {
+		_uiState.value = _uiState.value.copy(showVolumeSlider = !_uiState.value.showVolumeSlider)
+	}
+
+	fun setVolume(volume: Float) {
+		_uiState.value = _uiState.value.copy(volumeLevel = volume)
+		player.volume = volume
+	}
+
 	private fun playSound(sound: MediaItem) {
 		player.stop()
 		player.setMediaItem(sound)
@@ -158,6 +167,8 @@ class TimerViewModel(
 	}
 
 	data class TimerUiState(
+		val showVolumeSlider: Boolean = false,
+		val volumeLevel: Float = 1f, // ToDo: persist in settings
 		val remainingTime: Long = DEFAULT_PREPARE_TIME,
 		val percentageDone: Float = 0.0f,
 		val remainingIntervals: Int = 0,

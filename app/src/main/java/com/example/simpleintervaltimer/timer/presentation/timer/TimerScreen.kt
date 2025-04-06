@@ -9,10 +9,12 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.Slider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -32,6 +34,7 @@ import androidx.compose.ui.tooling.preview.PreviewScreenSizes
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
+import androidx.constraintlayout.compose.Dimension
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.simpleintervaltimer.R
 import com.example.simpleintervaltimer.common.presentation.KeepScreenOn
@@ -80,6 +83,8 @@ fun TimerScreen(
 	Timer(
 		remainingIntervals = uiState.getRemainingIntervalsText(LocalContext.current),
 		showDoneMessage = uiState.intervalState == DONE,
+		showVolumeSlider = uiState.showVolumeSlider,
+		volumeLevel = uiState.volumeLevel,
 		percentageDone = uiState.percentageDone,
 		stateColor = uiState.intervalState.toStateColor(),
 		time = uiState.getRemainingTimeFormatted(),
@@ -87,7 +92,9 @@ fun TimerScreen(
 		pauseResumeButtonIconResource = if (uiState.isTimerRunning) R.drawable.ic_pause else R.drawable.ic_play,
 		pauseResumeButtonContentDescriptionRes = if (uiState.isTimerRunning) R.string.pause else R.string.resume,
 		onPauseResumeButtonClick = timerViewModel::pauseOrResumeTimer,
-		onEndTimerButtonClick = { timerViewModel.requestEndTimer(onEndTimer = onEndTimer) }
+		onEndTimerButtonClick = { timerViewModel.requestEndTimer(onEndTimer = onEndTimer) },
+		onVolumeControlToggle = timerViewModel::toggleVolumeControl,
+		onVolumeChange = timerViewModel::setVolume
 	)
 }
 
@@ -115,6 +122,8 @@ private fun TimerViewModel.IntervalState.toStateColor() = when (this) {
 private fun Timer(
 	modifier: Modifier = Modifier,
 	showDoneMessage: Boolean,
+	showVolumeSlider: Boolean,
+	volumeLevel: Float,
 	remainingIntervals: String,
 	percentageDone: Float,
 	stateColor: Color,
@@ -123,10 +132,20 @@ private fun Timer(
 	pauseResumeButtonIconResource: Int,
 	pauseResumeButtonContentDescriptionRes: Int,
 	onPauseResumeButtonClick: () -> Unit,
-	onEndTimerButtonClick: () -> Unit
+	onEndTimerButtonClick: () -> Unit,
+	onVolumeControlToggle: () -> Unit,
+	onVolumeChange: (Float) -> Unit
 ) {
 	ConstraintLayout(modifier = modifier.fillMaxSize()) {
-		val (constRefIconButtonCloseTimer, constRefDoneMessage, constRefTextIntervalsLeft, constRefProgressTimer, constRefTextProgressState, constRefButtonPauseResume) = createRefs()
+		val (constRefIconButtonCloseTimer,
+			constRefDoneMessage,
+			constRefIconButtonVolume,
+			constRefVolumeSlider,
+			constRefTextIntervalsLeft,
+			constRefProgressTimer,
+			constRefTextProgressState,
+			constRefButtonPauseResume
+		) = createRefs()
 		IconButton(
 			modifier = Modifier
 				.constrainAs(constRefIconButtonCloseTimer) {
@@ -157,12 +176,40 @@ private fun Timer(
 			)
 			return@ConstraintLayout
 		}
+		IconButton(
+			modifier = Modifier
+				.constrainAs(constRefIconButtonVolume) {
+					end.linkTo(parent.end, margin = 8.dp)
+					top.linkTo(parent.top, margin = 8.dp)
+				},
+			onClick = onVolumeControlToggle,
+			content = {
+				Icon(
+					modifier = Modifier.size(48.dp),
+					imageVector = Icons.Default.Notifications,
+					contentDescription = null
+				)
+			}
+		)
+		if (showVolumeSlider) {
+			Slider(
+				modifier = Modifier
+					.constrainAs(constRefVolumeSlider) {
+						top.linkTo(constRefIconButtonVolume.bottom, margin = 8.dp)
+						start.linkTo(parent.start, margin = 20.dp)
+						end.linkTo(parent.end, margin = 20.dp)
+						width = Dimension.fillToConstraints
+					},
+				value = volumeLevel,
+				onValueChange = onVolumeChange
+			)
+		}
 		Text(
 			modifier = Modifier
-                .constrainAs(constRefTextIntervalsLeft) {
-                    bottom.linkTo(constRefProgressTimer.top, margin = 20.dp)
-                }
-                .fillMaxWidth(),
+				.constrainAs(constRefTextIntervalsLeft) {
+					bottom.linkTo(constRefProgressTimer.top, margin = 20.dp)
+				}
+				.fillMaxWidth(),
 			text = remainingIntervals,
 			style = TextStyle(
 				fontSize = 40.sp,
@@ -184,10 +231,10 @@ private fun Timer(
 		)
 		Text(
 			modifier = Modifier
-                .constrainAs(constRefTextProgressState) {
-                    top.linkTo(constRefProgressTimer.bottom, margin = 20.dp)
-                }
-                .fillMaxWidth(),
+				.constrainAs(constRefTextProgressState) {
+					top.linkTo(constRefProgressTimer.bottom, margin = 20.dp)
+				}
+				.fillMaxWidth(),
 			text = stringResource(stateNameRes),
 			style = TextStyle(
 				fontSize = 70.sp,
@@ -197,12 +244,12 @@ private fun Timer(
 		)
 		Button(
 			modifier = Modifier
-                .constrainAs(constRefButtonPauseResume) {
-                    top.linkTo(constRefTextProgressState.bottom)
-                    start.linkTo(parent.start)
-                    end.linkTo(parent.end)
-                }
-                .padding(all = 20.dp),
+				.constrainAs(constRefButtonPauseResume) {
+					top.linkTo(constRefTextProgressState.bottom)
+					start.linkTo(parent.start)
+					end.linkTo(parent.end)
+				}
+				.padding(all = 20.dp),
 			onClick = onPauseResumeButtonClick
 		) {
 			Icon(
@@ -225,8 +272,8 @@ private fun ProgressTimer(
 		CircularProgressIndicator(
 			progress = { progress },
 			modifier = Modifier
-                .align(Alignment.Center)
-                .size(300.dp),
+				.align(Alignment.Center)
+				.size(300.dp),
 			color = color,
 			strokeWidth = 10.dp
 		)
@@ -257,7 +304,11 @@ fun TimerPreview() {
 			pauseResumeButtonIconResource = R.drawable.ic_pause,
 			pauseResumeButtonContentDescriptionRes = R.string.pause,
 			onPauseResumeButtonClick = {},
-			onEndTimerButtonClick = {}
+			onEndTimerButtonClick = {},
+			onVolumeControlToggle = {},
+			onVolumeChange = {},
+			showVolumeSlider = false,
+			volumeLevel = 0.5f
 		)
 	}
 }
